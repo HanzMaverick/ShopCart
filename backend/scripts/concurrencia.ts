@@ -1,5 +1,5 @@
 /**
- * Prueba de concurrencia contra la API en ejecucion (npm run seed antes);
+ * Prueba de concurrencia contra la API en ejecucion (pnpm seed antes);
  *  A) ultima unidad: N clientes intentan reservar 1 unidad a la vez -> exactamente 1 gana, nunca hay sobreventa.
  *  B) idempotencia: el ganador paga 5 veces en paralelo con la misma clave -> 1 pedido, 1 cobro.
  *  C) cupon con 1 solo uso: 2 clientes lo usan a la vez -> exactamente 1 pedido con cupon.

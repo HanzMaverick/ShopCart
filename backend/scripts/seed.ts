@@ -1,6 +1,6 @@
 /**
  * Datos de demostracion para DESARROLLO (idempotente). Todo pasa por los mismos SPs y servicios que usa la API.
- * Uso: npm run seed
+ * Uso: pnpm seed
  */
 import { closePool } from '../src/db/pool';
 import { usuariosRepository } from '../src/repositories/usuarios.repository';
