@@ -17,6 +17,7 @@ export const P = {
   char:  (n: string, len: number, v: string | null | undefined): SpParam => [n, sql.Char(len), v],
   money: (n: string, v: number | null | undefined): SpParam => [n, sql.Decimal(18, 2), v],
   date:  (n: string, v: Date | null | undefined): SpParam => [n, sql.DateTime2(3), v],
+  fecha: (n: string, v: Date | null | undefined): SpParam => [n, sql.Date, v],   // solo fecha (reportes, hora local)
   guid:  (n: string, v: string | null | undefined): SpParam => [n, sql.UniqueIdentifier, v],
   text:  (n: string, v: string | null | undefined): SpParam => [n, sql.NVarChar(sql.MAX), v],
 };

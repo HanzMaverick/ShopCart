@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { atributosSchema, boolQuery, emailSchema, idSchema, moneySchema, passwordSchema } from './common';
 import { paginationSchema } from '../utils/pagination';
 
-/*  Auth*/
+/* ---- Auth ---- */
 export const registerBody = z.object({ correo: emailSchema, contrasena: passwordSchema, nombre: z.string().trim().min(2).max(150) });
 export const loginBody = z.object({ correo: emailSchema, contrasena: z.string().min(1).max(72) });
 export const refreshBody = z.object({ refreshToken: z.string().min(20).max(200) });
 
-/* Usuarios*/
+/* ---- Usuarios ---- */
 export const crearUsuarioBody = registerBody.extend({ idRol: z.number().int().min(1).max(3) });
 export const estadoUsuarioBody = z.object({ activo: z.boolean() });
 export const listarUsuariosQuery = paginationSchema.extend({
@@ -16,7 +16,7 @@ export const listarUsuariosQuery = paginationSchema.extend({
   activo: boolQuery.optional(),
 });
 
-/* Catalogo*/
+/* ---- Catalogo ---- */
 export const categoriaBody = z.object({
   nombre: z.string().trim().min(2).max(100),
   descripcion: z.string().trim().max(500).nullish(),
@@ -51,7 +51,7 @@ export const precioBody = z.object({ precio: moneySchema });
 export const estadoVarianteBody = z.object({ activa: z.boolean() });
 export const estadoProductoBody = z.object({ activo: z.boolean() });
 
-/* Inventario */
+/* ---- Inventario ---- */
 export const listarInventarioQuery = paginationSchema.extend({
   texto: z.string().trim().max(100).optional(),
   idCategoria: idSchema.optional(),
@@ -68,19 +68,19 @@ export const ajusteBody = z.object({
   motivo: z.string().trim().min(3, 'El motivo es obligatorio.').max(300),
 });
 
-/* Bitacora*/
+/* ---- Bitacora ---- */
 export const bitacoraQuery = paginationSchema.extend({
   modulo: z.enum(['Catalogo', 'Precios', 'Inventario', 'Cupones', 'Pedidos', 'Usuarios']).optional(),
 });
 
-/* Carrito*/
+/* ---- Carrito ---- */
 export const itemBody = z.object({ idVariante: idSchema, cantidad: z.number().int().min(1).max(10000) });
 export const cantidadBody = z.object({ cantidad: z.number().int().min(1).max(10000) });
 export const idVarianteParams = z.object({ idVariante: idSchema });
 export const cuponCodigoBody = z.object({ codigo: z.string().trim().min(3).max(30) });
 export const fusionarBody = z.object({ tokenInvitado: z.string().uuid() });
 
-/* Direcciones*/
+/* ---- Direcciones ---- */
 export const direccionBody = z.object({
   alias: z.string().trim().min(2).max(50),
   linea1: z.string().trim().min(5).max(200),
@@ -90,7 +90,7 @@ export const direccionBody = z.object({
   telefono: z.string().trim().regex(/^[0-9+\-\s()]{7,20}$/, 'Telefono invalido.'),
 });
 
-/* Checkout*/
+/* ---- Checkout ---- */
 export const idempotencyHeader = z.string().uuid('El header Idempotency-Key debe ser un UUID.');
 export const pagarBody = z.object({
   idDireccion: idSchema,
@@ -98,7 +98,7 @@ export const pagarBody = z.object({
   totalEsperado: z.number().min(0).max(9_999_999_999).optional(),   // el total que vio el cliente
 });
 
-/* Cupones */
+/* ---- Cupones ---- */
 const cuponCampos = z.object({
   codigo: z.string().trim().regex(/^[A-Za-z0-9_-]{3,30}$/, 'Codigo: 3 a 30 caracteres (letras, numeros, - y _).'),
   tipo: z.enum(['Porcentaje', 'MontoFijo']),
@@ -128,7 +128,7 @@ export const listarCuponesQuery = paginationSchema.extend({
   soloVigentes: boolQuery.optional(),
 });
 
-/* Pedidos*/
+/* ---- Pedidos ---- */
 export const listarPedidosQuery = paginationSchema.extend({
   idEstadoPedido: z.coerce.number().int().min(1).max(7).optional(),
   cliente: z.string().trim().max(100).optional(),
@@ -143,3 +143,17 @@ export const devolucionBody = z.object({
   motivo: z.string().trim().min(3).max(500),
   lineas: z.array(z.object({ idPedidoDetalle: idSchema, cantidad: z.number().int().min(1).max(10000) })).min(1).max(100),
 });
+
+/* ---- Reportes (fechas locales de Guatemala, inclusivas: YYYY-MM-DD) ---- */
+const fechaLocal = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use el formato YYYY-MM-DD.')
+  .refine((s) => !Number.isNaN(Date.parse(`${s}T00:00:00Z`)), 'Fecha invalida.')
+  .transform((s) => new Date(`${s}T00:00:00Z`));
+const rangoReporte = z.object({ desde: fechaLocal.optional(), hasta: fechaLocal.optional() });
+const rangoValido = (q: { desde?: Date; hasta?: Date }) => !q.desde || !q.hasta || q.desde <= q.hasta;
+const msgRango = { message: 'desde no puede ser posterior a hasta.', path: ['desde'] };
+
+export const reporteRangoQuery = rangoReporte.refine(rangoValido, msgRango);
+export const reporteVentasQuery = rangoReporte.extend({ agrupacion: z.enum(['Dia', 'Semana', 'Mes']).default('Dia') }).refine(rangoValido, msgRango);
+export const reporteResumenQuery = rangoReporte.extend({ horasAbandono: z.coerce.number().int().min(1).max(720).default(24) }).refine(rangoValido, msgRango);
+export const reporteTopQuery = rangoReporte.extend({ top: z.coerce.number().int().min(1).max(50).default(10) }).refine(rangoValido, msgRango);
+export const carritosAbandonadosQuery = paginationSchema.extend({ horas: z.coerce.number().int().min(1).max(720).default(24) });

@@ -12,7 +12,8 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "concurrencia": "tsx scripts/concurrencia.ts"
   },
   "dependencies": {
     "bcryptjs": "3.0.3",
