@@ -1,3 +1,7 @@
+# ShopCart - Frontend
+
+React 19 + TypeScript (strict) + Vite. Consume la API del backend (`../docs/API.md`). Gestor de paquetes: **pnpm**.
+
 ## Estructura
 ```
 src/

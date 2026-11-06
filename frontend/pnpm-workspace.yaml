@@ -1,0 +1,9 @@
+# Cadena de suministro (mismas reglas que el backend)
+allowBuilds:
+  esbuild: true
+
+# No instalar versiones publicadas hace menos de 7 dias (en minutos)
+minimumReleaseAge: 10080
+
+# Versiones exactas al agregar dependencias
+saveExact: true
