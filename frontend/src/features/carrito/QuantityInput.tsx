@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 interface Props { value: number; min?: number; max: number; onChange: (n: number) => void; disabled?: boolean; label?: string }
 
-/** Selector de cantidad: botones +/- y escritura directa (se confirma al salir del campo)*/
+/** Selector de cantidad: botones +/- y escritura directa (se confirma al salir del campo). */
 export function QuantityInput({ value, min = 1, max, onChange, disabled, label = 'Cantidad' }: Props) {
   const [text, setText] = useState(String(value));
   useEffect(() => setText(String(value)), [value]);

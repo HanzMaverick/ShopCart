@@ -40,7 +40,7 @@ export function LoginPage() {
         <form className="stack" onSubmit={onSubmit} noValidate>
           {formError && <Alert tone="error">{formError}</Alert>}
           <TextField label="Correo" type="email" autoComplete="email" error={errors.correo?.message} {...register('correo')} />
-          <TextField label="Contrasena" type="password" autoComplete="current-password" error={errors.contrasena?.message} {...register('contrasena')} />
+          <TextField label="Contraseña" type="password" autoComplete="current-password" error={errors.contrasena?.message} {...register('contrasena')} />
           <Button type="submit" loading={isSubmitting} block>Ingresar</Button>
           <p className="muted small">¿No tiene cuenta? <Link to={`/registro${sp.get('next') ? `?next=${encodeURIComponent(sp.get('next')!)}` : ''}`}>Crear cuenta</Link></p>
         </form>
@@ -77,8 +77,8 @@ export function RegisterPage() {
           {formError && <Alert tone="error">{formError}</Alert>}
           <TextField label="Nombre completo" autoComplete="name" error={errors.nombre?.message} {...register('nombre')} />
           <TextField label="Correo" type="email" autoComplete="email" error={errors.correo?.message} {...register('correo')} />
-          <TextField label="Contrasena" type="password" autoComplete="new-password" hint="Minimo 8 caracteres, con letras y numeros." error={errors.contrasena?.message} {...register('contrasena')} />
-          <TextField label="Confirmar contrasena" type="password" autoComplete="new-password" error={errors.confirmar?.message} {...register('confirmar')} />
+          <TextField label="Contraseña" type="password" autoComplete="new-password" hint="Minimo 8 caracteres, con letras y numeros." error={errors.contrasena?.message} {...register('contrasena')} />
+          <TextField label="Confirmar contraseña" type="password" autoComplete="new-password" error={errors.confirmar?.message} {...register('confirmar')} />
           <Button type="submit" loading={isSubmitting} block>Crear cuenta</Button>
           <p className="muted small">¿Ya tiene cuenta? <Link to="/login">Iniciar sesion</Link></p>
         </form>

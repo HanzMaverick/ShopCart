@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { adminNav } from '../../app/navigationn;
+import { adminNav } from '../../app/navigation';
 import { useAuth } from '../../auth/AuthContext';
 import { Button } from '../ui/Button';
 

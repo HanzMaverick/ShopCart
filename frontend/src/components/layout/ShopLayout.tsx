@@ -45,7 +45,7 @@ export function ShopLayout() {
         </div>
       </header>
       <main className="container"><Outlet /></main>
-      <footer className="footer">ShopCart · Tech Challenge 360 · Precios en quetzales con IVA incluido</footer>
+      <footer className="footer">ShopCart Derechos reservados</footer>
     </>
   );
 }
