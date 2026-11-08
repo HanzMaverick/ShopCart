@@ -83,3 +83,30 @@ export interface CarritoAbandonado {
   ultimaActividad: string; horasInactivo: number;
 }
 export interface CarritosAbandonadosRespuesta extends Page<CarritoAbandonado> { horas: number; valorTotal: number }
+
+/*Administracion*/
+export interface VarianteAdmin { idVariante: number; sku: string; atributos: Atributos; precio: number; existenciaDisponible: number; activa: boolean }
+export interface ProductoAdminDetalle {
+  producto: { idProducto: number; idCategoria: number; nombreCategoria: string; nombre: string; descripcion: string | null; activo: boolean };
+  variantes: VarianteAdmin[];
+  imagenes: { idImagenProducto: number; url: string; orden: number }[];
+}
+export interface ProductoBase { idProducto: number; idCategoria: number; nombre: string; descripcion: string | null; activo: boolean }
+export interface CategoriaInput { nombre: string; descripcion: string | null; activa: boolean }
+export interface ProductoInput { idCategoria: number; nombre: string; descripcion: string | null }
+
+export type TipoCupon = 'Porcentaje' | 'MontoFijo';
+export interface Cupon {
+  idCupon: number; codigo: string; tipo: TipoCupon; valor: number; montoMinimo: number; fechaInicio: string; fechaFin: string;
+  limiteUsosTotal: number; limiteUsosPorCliente: number; usosActuales: number; idCategoria: number | null; nombreCategoria: string | null; activo: boolean;
+}
+export interface CuponInput {
+  codigo: string; tipo: TipoCupon; valor: number; montoMinimo: number; fechaInicio: string; fechaFin: string;
+  limiteUsosTotal: number; limiteUsosPorCliente: number; idCategoria: number | null;
+}
+
+export interface UsuarioFila { idUsuario: number; correo: string; nombre: string; idRol: number; rol: Rol; activo: boolean; fechaCreacion: string }
+export interface BitacoraFila {
+  idBitacora: number; modulo: string; entidad: string; idEntidad: number; accion: string; valorAnterior: Record<string, unknown> | null;
+  valorNuevo: Record<string, unknown> | null; idUsuario: number; nombreUsuario: string; fecha: string;
+}

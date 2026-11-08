@@ -17,8 +17,8 @@ export function CartPage() {
   const cambiar = useCartMutation(({ id, n }: { id: number; n: number }) => carritoApi.cambiarCantidad(id, n));
   const quitar = useCartMutation((id: number) => carritoApi.quitar(id), 'Producto eliminado');
   const vaciar = useCartMutation(() => carritoApi.vaciar(), 'Carrito vaciado');
-  const aplicar = useCartMutation((codigo: string) => carritoApi.aplicarCupon(codigo), 'Cupon aplicado');
-  const quitarCupon = useCartMutation(() => carritoApi.quitarCupon(), 'Cupon retirado');
+  const aplicar = useCartMutation((codigo: string) => carritoApi.aplicarCupon(codigo), 'Cupón aplicado');
+  const quitarCupon = useCartMutation(() => carritoApi.quitarCupon(), 'Cupón retirado');
   const { register, handleSubmit, reset, formState: { errors } } = useForm<{ codigo: string }>({ resolver: zodResolver(cuponCodigoSchema) });
 
   if (isStaff) return <Card><EmptyState title="Las cuentas internas no tienen carrito" description="Inicie sesion con una cuenta de cliente para comprar." /></Card>;
@@ -27,7 +27,7 @@ export function CartPage() {
 
   const cart = q.data;
   if (cart.lineas.length === 0) {
-    return <Card><EmptyState title="Su carrito esta vacio" description="Agregue productos desde la tienda." action={<Link className="btn btn-primary" to="/">Ir a la tienda</Link>} /></Card>;
+    return <Card><EmptyState title="Su carrito está vacío" description="Agregue productos desde la tienda." action={<Link className="btn btn-primary" to="/">Ir a la tienda</Link>} /></Card>;
   }
   const hayNoDisponibles = cart.lineas.some((l) => !l.disponible);
   const ocupado = cambiar.isPending || quitar.isPending || vaciar.isPending || aplicar.isPending || quitarCupon.isPending;
@@ -62,7 +62,7 @@ export function CartPage() {
         <Card>
           <h2>Resumen</h2>
           <form className="row" style={{ alignItems: 'flex-start', marginBottom: '.75rem' }} onSubmit={handleSubmit((v) => { aplicar.mutate(v.codigo, { onSuccess: () => reset() }); })} noValidate>
-            <div className="grow"><TextField label="Cupon de descuento" placeholder="CODIGO" autoCapitalize="characters" error={errors.codigo?.message} {...register('codigo')} /></div>
+            <div className="grow"><TextField label="Cupón de descuento" placeholder="CODIGO" autoCapitalize="characters" error={errors.codigo?.message} {...register('codigo')} /></div>
             <Button type="submit" variant="secondary" loading={aplicar.isPending} style={{ marginTop: '1.5rem' }}>Aplicar</Button>
           </form>
           {cart.codigoCupon && (

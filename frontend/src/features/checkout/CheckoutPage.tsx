@@ -12,7 +12,7 @@ import { mmss, useCountdown } from '../../hooks/useCountdown';
 import { errorMessage } from '../../lib/errors';
 import { atributosTexto, formatQ } from '../../lib/format';
 import { CART_KEY, useCart } from '../carrito/useCart';
-import { DireccionForm } from '../cuenta/DireccionForm';
+//import { DireccionForm } from '../cuenta/DireccionForm';
 import { DIRECCIONES_KEY, useDirecciones } from '../cuenta/DireccionesPage';
 
 /**
@@ -28,7 +28,7 @@ function currentKey(): string {
 const rotateKey = () => sessionStorage.removeItem(IDEM_KEY);
 
 const METODOS: { id: MetodoPago; titulo: string; detalle: string }[] = [
-  { id: 'Tarjeta', titulo: 'Tarjeta de credito o debito', detalle: 'Cobro inmediato (pasarela simulada).' },
+  { id: 'Tarjeta', titulo: 'Tarjeta de crédito o débito', detalle: 'Cobro inmediato (pasarela simulada).' },
   { id: 'Transferencia', titulo: 'Transferencia bancaria', detalle: 'Se registra como pago aprobado (simulado).' },
   { id: 'Efectivo', titulo: 'Efectivo contra entrega', detalle: 'Se registra como pago aprobado (simulado).' },
 ];
@@ -68,7 +68,7 @@ export function CheckoutPage() {
     onError: async (e) => {
       // Falla de red: se conserva la clave (reintento seguro). Cualquier otro rechazo: intento nuevo con clave nueva.
       if (!(e instanceof ApiError && e.isNetwork)) rotateKey();
-      setPagoError(e instanceof ApiError && e.isNetwork ? `${e.message} Puede reintentar: no se duplicara el cobro.` : errorMessage(e));
+      setPagoError(e instanceof ApiError && e.isNetwork ? `${e.message} Puede reintentar: no se duplicará el cobro.` : errorMessage(e));
       await qc.invalidateQueries({ queryKey: CART_KEY });
     },
   });
@@ -90,8 +90,8 @@ export function CheckoutPage() {
       <div className="two-col">
         <div className="stack">
           <Card>
-            <div className="row-between"><h2>1. Direccion de entrega</h2><Button size="sm" variant="secondary" onClick={() => setNuevaDir(true)}>Nueva direccion</Button></div>
-            {dirs.data.length === 0 && <Alert tone="warning">Agregue una direccion para continuar.</Alert>}
+            <div className="row-between"><h2>1. Dirección de entrega</h2><Button size="sm" variant="secondary" onClick={() => setNuevaDir(true)}>Nueva direccion</Button></div>
+            {dirs.data.length === 0 && <Alert tone="warning">Agregue una dirección para continuar.</Alert>}
             <div className="stack-sm">
               {dirs.data.map((d) => (
                 <label key={d.idDireccion} className="radio-card">
@@ -103,7 +103,7 @@ export function CheckoutPage() {
           </Card>
 
           <Card>
-            <h2>2. Metodo de pago</h2>
+            <h2>2. Método de pago</h2>
             <div className="stack-sm">
               {METODOS.map((m) => (
                 <label key={m.id} className="radio-card">
@@ -117,7 +117,7 @@ export function CheckoutPage() {
           <Card>
             <h2>3. Reservar existencia y pagar</h2>
             {noDisponible && <Alert tone="error">Hay productos sin existencia suficiente. <Link to="/carrito">Revise su carrito</Link>.</Alert>}
-            {reservaExpirada && <Alert tone="warning">Su reserva expiro. Vuelva a reservar para continuar.</Alert>}
+            {reservaExpirada && <Alert tone="warning">Su reserva expiró. Vuelva a reservar para continuar.</Alert>}
             {pagoError && <Alert tone="error">{pagoError}</Alert>}
             {!reservaActiva ? (
               <div className="stack-sm">
@@ -128,7 +128,7 @@ export function CheckoutPage() {
               <div className="stack-sm">
                 <Alert tone="success">Existencia reservada. Tiempo restante: <span className="timer">{mmss(segundos)}</span></Alert>
                 <Button onClick={() => { setPagoError(null); pagar.mutate(); }} loading={pagar.isPending} disabled={!puedePagar}>Pagar {formatQ(c.total)}</Button>
-                <span className="muted small">Si hace doble clic o falla su conexion, no se generara un segundo pedido ni un segundo cobro.</span>
+                <span className="muted small">Si hace doble clic o falla su conexion, no se generará un segundo pedido ni un segundo cobro.</span>
               </div>
             )}
           </Card>
@@ -149,15 +149,15 @@ export function CheckoutPage() {
         </Card>
       </div>
 
-      {nuevaDir && (
-        <Modal title="Nueva direccion" onClose={() => setNuevaDir(false)}>
+        {nuevaDir && (
+        /*<Modal title="Nueva direccion" onClose={() => setNuevaDir(false)}>
           <DireccionForm onCancel={() => setNuevaDir(false)} onSubmit={async (d) => {
             const creada = await direccionesApi.crear(d);
             await qc.invalidateQueries({ queryKey: DIRECCIONES_KEY });
             setDirId(creada.idDireccion); setNuevaDir(false);
           }} />
-        </Modal>
-      )}
+        </Modal>*/
+        )}
     </>
   );
 }

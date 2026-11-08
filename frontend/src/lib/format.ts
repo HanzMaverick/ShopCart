@@ -32,9 +32,14 @@ export const precioRango = (min: number | null, max: number | null) =>
 /** Quetzales abreviados para ejes de graficas: Q850, Q12.5k, Q1.2M */
 export const compactQ = (n: number) => (n >= 1_000_000 ? `Q${(n / 1_000_000).toFixed(1)}M` : n >= 1000 ? `Q${(n / 1000).toFixed(n >= 10_000 ? 0 : 1)}k` : `Q${Math.round(n)}`);
 
-/** Etiqueta corta de un periodo del reporte de ventas ("2026-10-05" + Dia -> "05/10")*/
+/** Etiqueta corta de un periodo del reporte de ventas ("2026-10-05" + Dia -> "05/10"). */
 export function etiquetaPeriodo(ymd: string, agrupacion: string): string {
   const [y, m, d] = ymd.split('-');
   if (agrupacion === 'Mes') return `${['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'][Number(m) - 1] ?? m} ${y?.slice(2)}`;
   return `${d}/${m}`;
 }
+
+/* ---- Vigencias de cupones: dias calendario en hora de Guatemala (UTC-6, sin horario de verano) ---- */
+export const guatemalaDate = (iso: string): string => isoDate.format(new Date(iso));            // ISO UTC -> "2026-10-31"
+export const inicioDiaGuatemala = (ymd: string): string => `${ymd}T00:00:00-06:00`;              // se envia con zona explicita
+export const finDiaGuatemala = (ymd: string): string => `${ymd}T23:59:59-06:00`;

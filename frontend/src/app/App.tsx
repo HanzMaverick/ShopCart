@@ -13,11 +13,17 @@ import { MisPedidosPage, PedidoClientePage } from '../features/pedidos/PedidosCl
 import { CatalogPage } from '../features/tienda/CatalogPage';
 import { ProductPage } from '../features/tienda/ProductPage';
 
-// El panel interno se carga bajo demanda: los clientes no descargan ese codigo
+// El panel interno se carga bajo demanda
 const DashboardPage = lazy(() => import('../features/admin/DashboardPage'));
 const PedidosAdminPage = lazy(() => import('../features/admin/PedidosAdminPage'));
 const PedidoAdminPage = lazy(() => import('../features/admin/PedidoAdminPage'));
 const InventarioPage = lazy(() => import('../features/admin/InventarioPage'));
+const ProductosAdminPage = lazy(() => import('../features/admin/ProductosAdminPage'));
+const ProductoAdminPage = lazy(() => import('../features/admin/ProductoAdminPage'));
+const CategoriasPage = lazy(() => import('../features/admin/CategoriasPage'));
+const CuponesPage = lazy(() => import('../features/admin/CuponesPage'));
+const UsuariosPage = lazy(() => import('../features/admin/UsuariosPage'));
+const BitacoraPage = lazy(() => import('../features/admin/BitacoraPage'));
 
 function AdminHome() {
   const { user } = useAuth();
@@ -52,6 +58,12 @@ export function App() {
             <Route index element={<AdminHome />} />
             <Route element={<RequireRole roles={['Administrador']} />}>
               <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="productos" element={<ProductosAdminPage />} />
+              <Route path="productos/:id" element={<ProductoAdminPage />} />
+              <Route path="categorias" element={<CategoriasPage />} />
+              <Route path="cupones" element={<CuponesPage />} />
+              <Route path="usuarios" element={<UsuariosPage />} />
+              <Route path="bitacora" element={<BitacoraPage />} />
             </Route>
             <Route path="pedidos" element={<PedidosAdminPage />} />
             <Route path="pedidos/:id" element={<PedidoAdminPage />} />

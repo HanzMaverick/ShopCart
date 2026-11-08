@@ -7,4 +7,9 @@ export const adminNav: NavItem[] = [
   { to: '/admin/dashboard', label: 'Dashboard', roles: ['Administrador'] },
   { to: '/admin/pedidos', label: 'Pedidos', roles: ['Operador', 'Administrador'] },
   { to: '/admin/inventario', label: 'Inventario', roles: ['Operador', 'Administrador'] },
+  { to: '/admin/productos', label: 'Productos', roles: ['Administrador'] },
+  { to: '/admin/categorias', label: 'Categorias', roles: ['Administrador'] },
+  { to: '/admin/cupones', label: 'Cupones', roles: ['Administrador'] },
+  { to: '/admin/usuarios', label: 'Usuarios', roles: ['Administrador'] },
+  { to: '/admin/bitacora', label: 'Bitacora', roles: ['Administrador'] },
 ];

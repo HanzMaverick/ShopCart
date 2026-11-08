@@ -24,7 +24,7 @@ export function PedidoView({ detalle, showCliente, children }: { detalle: Pedido
         <div className="form-grid" style={{ marginTop: '1rem' }}>
           {showCliente && <div><strong className="small">Cliente</strong><br />{p.nombreCliente}<br /><span className="muted small">{p.correoCliente}</span></div>}
           <div><strong className="small">Entrega</strong><br />{p.direccionEnvio}<br /><span className="muted small">Tel. {p.telefonoContacto}</span></div>
-          {p.codigoCupon && <div><strong className="small">Cupon</strong><br /><Badge tone="success">{p.codigoCupon}</Badge></div>}
+          {p.codigoCupon && <div><strong className="small">Cupón</strong><br /><Badge tone="success">{p.codigoCupon}</Badge></div>}
         </div>
       </Card>
 
@@ -77,7 +77,7 @@ export function PedidoView({ detalle, showCliente, children }: { detalle: Pedido
               </div>
             ))}
             {devoluciones.map((d) => (
-              <div key={d.idDevolucion} className="small muted">Devolucion #{d.idDevolucion}: {d.motivo} ({formatQ(d.montoReembolsado)}, {d.nombreUsuario})</div>
+              <div key={d.idDevolucion} className="small muted">Devolución #{d.idDevolucion}: {d.motivo} ({formatQ(d.montoReembolsado)}, {d.nombreUsuario})</div>
             ))}
           </div>
         </Card>

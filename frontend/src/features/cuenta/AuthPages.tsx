@@ -29,7 +29,7 @@ export function LoginPage() {
       const u = await login(v.correo, v.contrasena);
       navigate(next ?? homeFor(u.rol), { replace: true });
     } catch (e) {
-      setFormError(e instanceof ApiError && e.code === 'INVALID_CREDENTIALS' ? 'Correo o contrasena incorrectos.' : errorMessage(e));
+      setFormError(e instanceof ApiError && e.code === 'INVALID_CREDENTIALS' ? 'Correo o contraseña incorrectos.' : errorMessage(e));
     }
   });
 

@@ -6,6 +6,7 @@ import { ApiError } from './api/http';
 import { App } from './app/App';
 import { AuthProvider } from './auth/AuthContext';
 import { ToastProvider } from './components/ui/Toast';
+import '@fontsource-variable/montserrat';
 import './styles/global.css';
 
 const queryClient = new QueryClient({

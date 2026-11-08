@@ -25,7 +25,7 @@ export function ProductPage() {
   }, [variantes, variantId]);
 
   if (q.isPending) return <div className="product-detail"><Skeleton height={380} /><div className="stack"><Skeleton height={32} /><Skeleton height={20} /><Skeleton height={120} /></div></div>;
-  if (q.isError) return <ErrorState title="No se encontro el producto" error={q.error} onRetry={() => void q.refetch()} />;
+  if (q.isError) return <ErrorState title="No se encontró el producto" error={q.error} onRetry={() => void q.refetch()} />;
 
   const { producto, imagenes } = q.data;
   const variante = variantes.find((v) => v.idVariante === variantId);
@@ -64,7 +64,7 @@ export function ProductPage() {
 
             {variante && (disponible <= 0 ? <Badge tone="danger">Agotado</Badge> : <span className="muted small">{disponible <= 5 ? `Solo quedan ${disponible}` : 'Disponible'} · SKU {variante.sku}</span>)}
 
-            {isStaff ? <Alert tone="info">Las cuentas internas no compran. Use una cuenta de cliente.</Alert> : (
+            {isStaff ? <Alert tone="info">Las cuentas internas no pueden comprar. Utilice una cuenta de cliente.</Alert> : (
               <div className="row">
                 <QuantityInput value={cantidad} max={Math.max(disponible, 1)} onChange={setQty} disabled={disponible <= 0} />
                 <Button loading={add.isPending} disabled={!variante || disponible <= 0}

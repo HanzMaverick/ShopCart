@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { homeFor, useAuth } from '../../auth/AuthContext';
 import { useCart } from '../../features/carrito/useCart';
@@ -26,7 +27,8 @@ export function ShopLayout() {
             <span className="grow" />
             {!isStaff && (
               <NavLink to="/carrito" className="cart-link" onClick={close} aria-label={`Carrito, ${units} unidades`}>
-                Carrito{units > 0 && <span className="cart-count">{units}</span>}
+              <ShoppingCart size={20} strokeWidth={2} /><span>Carrito</span>
+              {units > 0 && (<span className="cart-count">{units}</span>)}
               </NavLink>
             )}
             {status !== 'loading' && !user && (
@@ -45,7 +47,7 @@ export function ShopLayout() {
         </div>
       </header>
       <main className="container"><Outlet /></main>
-      <footer className="footer">ShopCart Derechos reservados</footer>
+      <footer className="footer">ShopCart Derechos Reservados ©</footer>
     </>
   );
 }
