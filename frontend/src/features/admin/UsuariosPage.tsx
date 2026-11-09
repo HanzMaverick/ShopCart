@@ -96,7 +96,7 @@ export default function UsuariosPage() {
       {creating && <UsuarioModal onClose={() => setCreating(false)} onSaved={refrescar} />}
       {desactivando && (
         <ConfirmDialog title="Desactivar usuario" danger confirmLabel="Desactivar" loading={cambiar.isPending}
-          message={<>¿Desactivar a <strong>{desactivando.nombre}</strong>? Perdera el acceso de inmediato y se cerraran todas sus sesiones. Puede reactivarlo despues.</>}
+          message={<>¿Desactivar a <strong>{desactivando.nombre}</strong>? Perdera el acceso de inmediato y se cerraran todas sus sesiones. Puede reactivarlo después.</>}
           onConfirm={() => cambiar.mutate(desactivando)} onCancel={() => setDesactivando(null)} />
       )}
     </>

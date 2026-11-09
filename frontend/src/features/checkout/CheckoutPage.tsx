@@ -12,7 +12,7 @@ import { mmss, useCountdown } from '../../hooks/useCountdown';
 import { errorMessage } from '../../lib/errors';
 import { atributosTexto, formatQ } from '../../lib/format';
 import { CART_KEY, useCart } from '../carrito/useCart';
-//import { DireccionForm } from '../cuenta/DireccionForm';
+import { DireccionForm } from '../cuenta/DireccionForm';
 import { DIRECCIONES_KEY, useDirecciones } from '../cuenta/DireccionesPage';
 
 /**
@@ -150,13 +150,13 @@ export function CheckoutPage() {
       </div>
 
         {nuevaDir && (
-        /*<Modal title="Nueva direccion" onClose={() => setNuevaDir(false)}>
+        <Modal title="Nueva direccion" onClose={() => setNuevaDir(false)}>
           <DireccionForm onCancel={() => setNuevaDir(false)} onSubmit={async (d) => {
             const creada = await direccionesApi.crear(d);
             await qc.invalidateQueries({ queryKey: DIRECCIONES_KEY });
             setDirId(creada.idDireccion); setNuevaDir(false);
           }} />
-        </Modal>*/
+        </Modal>
         )}
     </>
   );

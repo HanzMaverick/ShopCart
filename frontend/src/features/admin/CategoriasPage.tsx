@@ -28,16 +28,16 @@ function CategoriaModal({ categoria, onClose, onSaved }: { categoria: Categoria 
     setFormError(null);
     try {
       if (categoria) await adminApi.categorias.actualizar(categoria.idCategoria, v); else await adminApi.categorias.crear(v);
-      toast.success('Categoria guardada');
+      toast.success('Categoría guardada');
       await onSaved(); onClose();
     } catch (e) { if (!applyServerErrors(e, setError, ['nombre', 'descripcion'])) setFormError(errorMessage(e)); }
   });
   return (
-    <Modal title={categoria ? 'Editar categoria' : 'Nueva categoria'} onClose={onClose}>
+    <Modal title={categoria ? 'Editar categoría' : 'Nueva categoría'} onClose={onClose}>
       <form className="stack" onSubmit={submit} noValidate>
         {formError && <Alert tone="error">{formError}</Alert>}
         <TextField label="Nombre" error={errors.nombre?.message} {...register('nombre')} />
-        <TextareaField label="Descripcion (opcional)" error={errors.descripcion?.message} {...register('descripcion')} />
+        <TextareaField label="Descripción (opcional)" error={errors.descripcion?.message} {...register('descripcion')} />
         <label className="check"><input type="checkbox" {...register('activa')} /> Activa (visible en la tienda)</label>
         <div className="modal-actions"><Button variant="secondary" onClick={onClose} disabled={isSubmitting}>Cancelar</Button><Button type="submit" loading={isSubmitting}>Guardar</Button></div>
       </form>
@@ -61,7 +61,7 @@ export default function CategoriasPage() {
 
   const cols: Column<Categoria>[] = [
     { key: 'n', header: 'Nombre', cell: (c) => <strong>{c.nombre}</strong> },
-    { key: 'd', header: 'Descripcion', cell: (c) => c.descripcion ?? <span className="muted">-</span> },
+    { key: 'd', header: 'Descripción', cell: (c) => c.descripcion ?? <span className="muted">-</span> },
     { key: 'p', header: 'Productos', numeric: true, cell: (c) => c.totalProductos ?? 0 },
     { key: 'e', header: 'Estado', cell: (c) => (c.activa ? <Badge tone="success">Activa</Badge> : <Badge>Inactiva</Badge>) },
     { key: 'a', header: '', cell: (c) => (
@@ -70,7 +70,7 @@ export default function CategoriasPage() {
 
   return (
     <>
-      <PageHeader title="Categorias" subtitle="Una categoria con productos o cupones no se elimina: desactivela." actions={<Button onClick={() => setEditing('nueva')}>Nueva categoria</Button>} />
+      <PageHeader title="Categorias" subtitle="Una categoría con productos o cupones no se elimina: desactivela." actions={<Button onClick={() => setEditing('nueva')}>Nueva categoría</Button>} />
       <DataTable columns={cols} rows={q.data} rowKey={(c) => c.idCategoria} loading={q.isPending} fetching={q.isFetching} error={q.error} onRetry={() => void q.refetch()} emptyTitle="Aun no hay categorias" />
       {editing && <CategoriaModal categoria={editing === 'nueva' ? null : editing} onClose={() => setEditing(null)} onSaved={refrescar} />}
       {deleting && (

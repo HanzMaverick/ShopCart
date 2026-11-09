@@ -17,7 +17,10 @@ export function ShopLayout() {
     <>
       <header className="topbar">
         <div className="topbar-inner">
-          <Link to="/" className="brand" onClick={close}>Shop<span>Cart</span></Link>
+          <Link
+            to="/" className="brand" onClick={close} aria-label="ShopCart - Ir a la tienda" >
+            <img src="/images/logo-shopcart2.png" alt="ShopCart" className="brand-logo" />
+          </Link>
           <Button className="burger" variant="secondary" size="sm" aria-expanded={open} aria-label="Menu" onClick={() => setOpen((o) => !o)}>Menu</Button>
           <nav className={`nav collapsible grow${open ? ' open' : ''}`} aria-label="Principal">
             <NavLink to="/" end onClick={close}>Tienda</NavLink>
@@ -47,7 +50,7 @@ export function ShopLayout() {
         </div>
       </header>
       <main className="container"><Outlet /></main>
-      <footer className="footer">ShopCart Derechos Reservados ©</footer>
+      <footer className="footer">ShopCart Derechos Reservados © Desarrollado por HanzMaverick</footer>
     </>
   );
 }

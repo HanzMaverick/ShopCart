@@ -67,7 +67,7 @@ export function CartPage() {
           </form>
           {cart.codigoCupon && (
             <div className="row-between" style={{ marginBottom: '.5rem' }}>
-              <Badge tone={cart.cuponAviso ? 'warning' : 'success'}>Cupon {cart.codigoCupon}</Badge>
+              <Badge tone={cart.cuponAviso ? 'warning' : 'success'}>Cupón {cart.codigoCupon}</Badge>
               <Button size="sm" variant="ghost" onClick={() => quitarCupon.mutate()}>Quitar</Button>
             </div>
           )}

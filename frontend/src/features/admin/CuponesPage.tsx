@@ -41,18 +41,18 @@ function CuponModal({ cupon, onClose, onSaved }: { cupon: Cupon | null; onClose:
     };
     try {
       if (cupon) await adminApi.cupones.actualizar(cupon.idCupon, { ...body, activo: v.activo }); else await adminApi.cupones.crear(body);
-      toast.success('Cupon guardado');
+      toast.success('Cupón guardado');
       await onSaved(); onClose();
     } catch (e) { if (!applyServerErrors(e, setError, CAMPOS)) setFormError(errorMessage(e)); }
   });
 
   return (
-    <Modal title={cupon ? `Editar cupon ${cupon.codigo}` : 'Nuevo cupon'} wide onClose={onClose}>
+    <Modal title={cupon ? `Editar cupón ${cupon.codigo}` : 'Nuevo cupón'} wide onClose={onClose}>
       <form className="stack" onSubmit={submit} noValidate>
         {formError && <Alert tone="error">{formError}</Alert>}
-        {cupon && cupon.usosActuales > 0 && <Alert tone="info">Este cupón ya se uso {cupon.usosActuales} vez(veces); el limite total no puede ser menor.</Alert>}
+        {cupon && cupon.usosActuales > 0 && <Alert tone="info">Este cupón ya se usó {cupon.usosActuales} vez(veces); el limite total no puede ser menor.</Alert>}
         <div className="form-grid">
-          <TextField label="Codigo" autoCapitalize="characters" error={errors.codigo?.message} {...register('codigo')} />
+          <TextField label="Código" autoCapitalize="characters" error={errors.codigo?.message} {...register('codigo')} />
           <SelectField label="Tipo de descuento" error={errors.tipo?.message} {...register('tipo')}>
             <option value="Porcentaje">Porcentaje (%)</option><option value="MontoFijo">Monto fijo (Q)</option>
           </SelectField>
@@ -67,14 +67,14 @@ function CuponModal({ cupon, onClose, onSaved }: { cupon: Cupon | null; onClose:
             {categorias.data?.map((c) => <option key={c.idCategoria} value={c.idCategoria}>Solo {c.nombre}</option>)}
           </SelectField>
         </div>
-        {cupon && <Checkbox label="Cupon activo" {...register('activo')} />}
+        {cupon && <Checkbox label="Cupón activo" {...register('activo')} />}
         <div className="modal-actions"><Button variant="secondary" onClick={onClose} disabled={isSubmitting}>Cancelar</Button><Button type="submit" loading={isSubmitting}>Guardar</Button></div>
       </form>
     </Modal>
   );
 }
 
-/** Solo informativo: la vigencia real la decide el servidor al validar el cupon*/
+/** Solo informativo: la vigencia real la decide el servidor al validar el cupón*/
 function vigenciaBadge(c: Cupon) {
   const ahora = Date.now();
   if (!c.activo) return <Badge>Inactivo</Badge>;
@@ -97,12 +97,12 @@ export default function CuponesPage() {
 
   const toggle = useMutation({
     mutationFn: (c: Cupon) => adminApi.cupones.cambiarEstado(c.idCupon, !c.activo),
-    onSuccess: async (r) => { toast.success(r.activo ? 'Cupon activado' : 'Cupon desactivado'); await refrescar(); },
+    onSuccess: async (r) => { toast.success(r.activo ? 'Cupón activado' : 'Cupón desactivado'); await refrescar(); },
     onError: (e) => toast.error(errorMessage(e)),
   });
 
   const cols: Column<Cupon>[] = [
-    { key: 'c', header: 'Codigo', cell: (c) => <code><strong>{c.codigo}</strong></code> },
+    { key: 'c', header: 'Código', cell: (c) => <code><strong>{c.codigo}</strong></code> },
     { key: 'd', header: 'Descuento', cell: (c) => <>{c.tipo === 'Porcentaje' ? `${c.valor} %` : formatQ(c.valor)}<br /><span className="muted small">{c.nombreCategoria ? `Solo ${c.nombreCategoria}` : 'Todo el carrito'}{c.montoMinimo > 0 ? ` · min. ${formatQ(c.montoMinimo)}` : ''}</span></> },
     { key: 'v', header: 'Vigencia', cell: (c) => <>{formatDate(c.fechaInicio)} - {formatDate(c.fechaFin)}</> },
     { key: 'u', header: 'Usos', numeric: true, cell: (c) => <>{c.usosActuales} / {c.limiteUsosTotal}<br /><span className="muted small">{c.limiteUsosPorCliente} por cliente</span></> },
@@ -114,11 +114,11 @@ export default function CuponesPage() {
 
   return (
     <>
-      <PageHeader title="Cupones" subtitle="Un solo cupon por pedido. Los limites se respetan aunque varios clientes lo usen a la vez." actions={<Button onClick={() => setEditing('nuevo')}>Nuevo cupon</Button>} />
+      <PageHeader title="Cupones" subtitle="Un solo cupón por pedido. Los limites se respetan aunque varios clientes lo usen a la vez." actions={<Button onClick={() => setEditing('nuevo')}>Nuevo cupón</Button>} />
       <div className="stack">
         <Card className="card-flat">
           <div className="filters">
-            <TextField label="Buscar codigo" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+            <TextField label="Buscar código" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
             <SelectField label="Estado" value={activoParam ?? ''} onChange={(e) => url.set({ activo: e.target.value })}>
               <option value="">Todos</option><option value="true">Activos</option><option value="false">Inactivos</option>
             </SelectField>

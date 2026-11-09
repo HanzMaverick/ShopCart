@@ -1,7 +1,7 @@
-# ShopCart - Tienda en linea 
+# ShopCart - Tienda en linea (Tech Challenge 360, Grupo Pentandra)
 
-Plataforma de ventas con **SQL Server** (todo el acceso a datos por stored procedures), **Node.js + Express + TypeScript** y **React + TypeScript** (Fase 2).
-Documentacion complementaria: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) (estructura y estado) · [`docs/API.md`](docs/API.md) (endpoints) · [`backend/README.md`](backend/README.md).
+Plataforma de ventas con **SQL Server** (todo el acceso a datos por stored procedures), **Node.js + Express + TypeScript** y **React + TypeScript**.
+Documentacion complementaria: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) (estructura y estado) · [`docs/API.md`](docs/API.md) (endpoints) · [`backend/README.md`](backend/README.md) · [`frontend/README.md`](frontend/README.md).
 
 ## 1. Puesta en marcha (maquina limpia)
 Requisitos: SQL Server 2019+ (con `sqlcmd`), Node.js 24 LTS y pnpm 12 (`corepack enable` o `npm i -g pnpm`).
@@ -11,7 +11,7 @@ Requisitos: SQL Server 2019+ (con `sqlcmd`), Node.js 24 LTS y pnpm 12 (`corepack
    cd database
    DB_SERVER=localhost DB_USER=sa DB_PASSWORD='***' ./run_all.sh --reset      # --reset recrea la BD; SKIP_SEED_GRANDE=1 omite la 016
    ```
-   Sin Bash: correr con SSMS / Azure Data Studio `000_Reiniciar.sql` (opcional) y luego `001` ... `016` en orden.
+   Sin Bash: correr con SSMS / Azure Data Studio `000_Reiniciar.sql` (opcional) y luego `001` ... `017` en orden.
 2. **Backend:**
    ```bash
    cd backend
@@ -20,7 +20,14 @@ Requisitos: SQL Server 2019+ (con `sqlcmd`), Node.js 24 LTS y pnpm 12 (`corepack
    pnpm seed                     # usuarios demo, direccion y cupones de ejemplo
    pnpm dev                      # http://localhost:3000/api/health
    ```
-3. **Prueba de concurrencia** (API en marcha con `RATE_LIMIT_AUTH_POR_MINUTO=1000`): `pnpm concurrencia`.
+3. **Frontend** (con el backend en marcha):
+   ```bash
+   cd frontend
+   pnpm install --frozen-lockfile
+   pnpm dev                      # http://localhost:5173 (el proxy de Vite envia /api al backend)
+   pnpm test                     # pruebas del cliente HTTP
+   ```
+4. **Prueba de concurrencia** (API en marcha con `RATE_LIMIT_AUTH_POR_MINUTO=1000`): en `backend`, `pnpm concurrencia`.
 
 ### Credenciales de prueba
 | Rol | Correo | Contrasena |
@@ -34,7 +41,7 @@ Cupones de ejemplo: `BIENVENIDO10` (10 %, minimo Q100) y `ROPA25` (Q25 en la cat
 
 ## 2. Arquitectura
 ```
-React (Fase 2)  ->  Express: routes -> services -> repositories  ->  SQL Server: stored procedures (+ triggers/CHECK)
+React (SPA)  ->  Express: routes -> services -> repositories  ->  SQL Server: stored procedures (+ triggers/CHECK)
                     validacion zod · JWT/roles · errores centralizados        reglas criticas, transacciones, concurrencia, auditoria
 ```
 - **Sin ORM ni SQL en el backend:** `backend/src/db/sp.ts` es la unica puerta a datos y solo ejecuta SPs con parametros tipados.
@@ -118,4 +125,6 @@ Las transiciones viven en la tabla `TransicionEstadoPedido` y se validan en el S
 - **BD:** modelo normalizado con PK/FK/UNIQUE/NOT NULL/CHECK; `DECIMAL`, nunca `FLOAT`; scripts SQL numerados y reproducibles; solo SPs; nomenclatura `SP_Modulo_Proceso`, `VW_`, `FU_`, `IDTabla`.
 - **Backend:** TypeScript strict, capas, validacion zod, errores centralizados, `.env.example`, sin credenciales en el repo, CORS y cabeceras de seguridad (helmet), rate limit en `/auth`.
 - **Dependencias:** pnpm con versiones exactas, scripts de instalacion bloqueados y antiguedad minima de 7 dias (`pnpm-workspace.yaml`); auditoria documentada en `backend/README.md`.
+- **Tiempo real (extra):** el dashboard, las listas y el detalle de pedidos se actualizan solos por SSE; el cliente ve el cambio de estado de su pedido sin recargar (ver `docs/ARQUITECTURA.md`, seccion 4b).
 - **Inmutabilidad:** bitacora, kardex e historial de estados no admiten UPDATE/DELETE (triggers).
+

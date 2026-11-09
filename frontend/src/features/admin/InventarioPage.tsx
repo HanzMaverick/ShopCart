@@ -88,7 +88,7 @@ export default function InventarioPage() {
   const cols: Column<ExistenciaFila>[] = [
     { key: 'sku', header: 'SKU', cell: (f) => <code>{f.sku}</code> },
     { key: 'prod', header: 'Producto', cell: (f) => <>{f.nombreProducto}<br /><span className="muted small">{atributosTexto(f.atributos)}</span></> },
-    { key: 'cat', header: 'Categoria', cell: (f) => f.nombreCategoria },
+    { key: 'cat', header: 'Categoría', cell: (f) => f.nombreCategoria },
     { key: 'fis', header: 'Fisica', numeric: true, cell: (f) => f.existenciaFisica },
     { key: 'res', header: 'Reservada', numeric: true, cell: (f) => f.existenciaReservada },
     { key: 'disp', header: 'Disponible', numeric: true, cell: (f) => <Badge tone={f.existenciaDisponible <= 0 ? 'danger' : f.existenciaDisponible <= 10 ? 'warning' : 'success'}>{f.existenciaDisponible}</Badge> },

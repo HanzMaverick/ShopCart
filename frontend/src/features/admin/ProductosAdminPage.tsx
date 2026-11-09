@@ -37,7 +37,7 @@ export default function ProductosAdminPage() {
   const eliminar = useMutation({
     mutationFn: (id: number) => adminApi.productos.eliminar(id),
     onSuccess: async (r) => {
-      toast.success(r.resultado === 'Eliminado' ? 'Producto eliminado' : 'El producto tiene historial: se desactivo en lugar de eliminarse');
+      toast.success(r.resultado === 'Eliminado' ? 'Producto eliminado' : 'El producto tiene historial: se desactivó en lugar de eliminarse');
       setDeleting(null); await refrescar();
     },
     onError: (e) => { toast.error(errorMessage(e)); setDeleting(null); },
@@ -49,7 +49,7 @@ export default function ProductosAdminPage() {
         {p.imagenUrl ? <img src={p.imagenUrl} alt="" width={40} height={40} style={{ objectFit: 'cover', borderRadius: 6 }} /> : <span style={{ width: 40, height: 40 }} aria-hidden="true" />}
         <Link to={`/admin/productos/${p.idProducto}`}><strong>{p.nombre}</strong></Link>
       </div>) },
-    { key: 'c', header: 'Categoria', cell: (p) => p.nombreCategoria },
+    { key: 'c', header: 'Categoría', cell: (p) => p.nombreCategoria },
     { key: 'p', header: 'Precio', sortKey: 'Precio', numeric: true, cell: (p) => precioRango(p.precioMin, p.precioMax) },
     { key: 'd', header: 'Disponible', numeric: true, cell: (p) => <Badge tone={p.existenciaDisponible <= 0 ? 'danger' : 'success'}>{p.existenciaDisponible}</Badge> },
     { key: 'e', header: 'Estado', cell: (p) => (p.activo ? <Badge tone="success">Activo</Badge> : <Badge>Inactivo</Badge>) },
@@ -63,12 +63,12 @@ export default function ProductosAdminPage() {
 
   return (
     <>
-      <PageHeader title="Productos" subtitle="Catalogo completo, incluidos los inactivos" actions={<Button onClick={() => setCreating(true)}>Nuevo producto</Button>} />
+      <PageHeader title="Productos" subtitle="Catálogo completo, incluidos los inactivos" actions={<Button onClick={() => setCreating(true)}>Nuevo producto</Button>} />
       <div className="stack">
         <Card className="card-flat">
           <div className="filters">
             <TextField label="Buscar" type="search" placeholder="Nombre, descripcion o SKU" value={texto} onChange={(e) => setTexto(e.target.value)} />
-            <SelectField label="Categoria" value={url.get('idCategoria') ?? ''} onChange={(e) => url.set({ idCategoria: e.target.value })}>
+            <SelectField label="Categoría" value={url.get('idCategoria') ?? ''} onChange={(e) => url.set({ idCategoria: e.target.value })}>
               <option value="">Todas</option>{categorias.data?.map((c) => <option key={c.idCategoria} value={c.idCategoria}>{c.nombre}</option>)}
             </SelectField>
           </div>

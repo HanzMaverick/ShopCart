@@ -5,11 +5,11 @@ const texto = (campo: string, min = 1, max = 200) =>
 
 export const passwordSchema = z.string()
   .min(8, 'Minimo 8 caracteres.').max(72, 'Maximo 72 caracteres.')
-  .regex(/[A-Za-z]/, 'Debe incluir al menos una letra.').regex(/\d/, 'Debe incluir al menos un numero.');
+  .regex(/[A-Za-z]/, 'Debe incluir al menos una letra.').regex(/\d/, 'Debe incluir al menos un número.');
 
 export const loginSchema = z.object({
   correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo invalido.')),
-  contrasena: z.string().min(1, 'La contrasena es obligatoria.'),
+  contrasena: z.string().min(1, 'La contraseña es obligatoria.'),
 });
 export type LoginForm = z.infer<typeof loginSchema>;
 
@@ -17,8 +17,8 @@ export const registerSchema = z.object({
   nombre: texto('El nombre', 2, 150),
   correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo invalido.')),
   contrasena: passwordSchema,
-  confirmar: z.string().min(1, 'Confirme la contrasena.'),
-}).refine((v) => v.contrasena === v.confirmar, { message: 'Las contrasenas no coinciden.', path: ['confirmar'] });
+  confirmar: z.string().min(1, 'Confirme la contraseña.'),
+}).refine((v) => v.contrasena === v.confirmar, { message: 'Las contraseñas no coinciden.', path: ['confirmar'] });
 export type RegisterForm = z.infer<typeof registerSchema>;
 
 export const direccionSchema = z.object({

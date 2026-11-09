@@ -21,11 +21,11 @@ function CambiosModal({ fila, onClose }: { fila: BitacoraFila; onClose: () => vo
   const campos = [...new Set([...Object.keys(antes), ...Object.keys(despues)])];
   return (
     <Modal title={`${fila.accion} · ${fila.entidad} #${fila.idEntidad}`} wide onClose={onClose}>
-      <p className="muted small">{formatDateTime(fila.fecha)} · {fila.nombreUsuario} · Modulo {fila.modulo}</p>
-      {campos.length === 0 ? <Alert tone="info">Este registro no guardo valores.</Alert> : (
+      <p className="muted small">{formatDateTime(fila.fecha)} · {fila.nombreUsuario} · Módulo {fila.modulo}</p>
+      {campos.length === 0 ? <Alert tone="info">Este registro no guardó valores.</Alert> : (
         <div className="table-wrap">
           <table className="table">
-            <thead><tr><th>Campo</th><th>Antes</th><th>Despues</th></tr></thead>
+            <thead><tr><th>Campo</th><th>Antes</th><th>Después</th></tr></thead>
             <tbody>
               {campos.map((c) => {
                 const cambio = JSON.stringify(antes[c]) !== JSON.stringify(despues[c]);
@@ -51,16 +51,16 @@ export default function BitacoraPage() {
 
   const cols: Column<BitacoraFila>[] = [
     { key: 'f', header: 'Fecha', cell: (b) => formatDateTime(b.fecha) },
-    { key: 'm', header: 'Modulo', cell: (b) => <Badge tone="primary">{b.modulo}</Badge> },
+    { key: 'm', header: 'Módulo', cell: (b) => <Badge tone="primary">{b.modulo}</Badge> },
     { key: 'e', header: 'Entidad', cell: (b) => <>{b.entidad} <span className="muted">#{b.idEntidad}</span></> },
-    { key: 'a', header: 'Accion', cell: (b) => <Badge tone={ACCION_TONE[b.accion as keyof typeof ACCION_TONE] ?? 'neutral'}>{b.accion}</Badge> },
+    { key: 'a', header: 'Acción', cell: (b) => <Badge tone={ACCION_TONE[b.accion as keyof typeof ACCION_TONE] ?? 'neutral'}>{b.accion}</Badge> },
     { key: 'u', header: 'Usuario', cell: (b) => b.nombreUsuario },
     { key: 'd', header: '', cell: (b) => <Button size="sm" variant="secondary" onClick={() => setDetalle(b)}>Ver cambios</Button> },
   ];
 
   return (
     <>
-      <PageHeader title="Bitacora" subtitle="Registro de solo lectura: quien cambio precios, existencias, cupones, pedidos y mas. No puede modificarse ni eliminarse." />
+      <PageHeader title="Bitácora" subtitle="Registro de solo lectura: quien cambió precios, existencias, cupones, pedidos y más. No puede modificarse ni eliminarse." />
       <div className="stack">
         <Card className="card-flat">
           <div className="filters">
@@ -70,7 +70,7 @@ export default function BitacoraPage() {
           </div>
         </Card>
         <DataTable columns={cols} rows={q.data?.data} rowKey={(b) => b.idBitacora} loading={q.isPending} fetching={q.isFetching} error={q.error} onRetry={() => void q.refetch()}
-                   pagination={q.data?.pagination} onPageChange={(page) => url.set({ page })} emptyTitle="Sin registros" emptyDescription="No hay movimientos para ese modulo." />
+                   pagination={q.data?.pagination} onPageChange={(page) => url.set({ page })} emptyTitle="Sin registros" emptyDescription="No hay movimientos para ese módulo." />
       </div>
       {detalle && <CambiosModal fila={detalle} onClose={() => setDetalle(null)} />}
     </>

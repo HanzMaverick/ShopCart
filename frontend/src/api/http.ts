@@ -109,7 +109,7 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
       session.expire();
       throw err;
     }
-    throw new ApiError(0, 'NETWORK', 'No se pudo renovar la sesion por un problema de conexion.');
+    throw new ApiError(0, 'NETWORK', 'No se pudo renovar la sesion por un problema de conexión.');
   }
 
   if (!res.ok) throw await readError(res);

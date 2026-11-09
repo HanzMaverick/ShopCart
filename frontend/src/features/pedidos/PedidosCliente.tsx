@@ -94,7 +94,7 @@ export function PedidoClientePage() {
   });
 
   if (q.isPending) return <div className="stack"><Skeleton height={100} /><Skeleton height={220} /></div>;
-  if (q.isError) return <ErrorState title="No se encontro el pedido" error={q.error} onRetry={() => void q.refetch()} />;
+  if (q.isError) return <ErrorState title="No se encontró el pedido" error={q.error} onRetry={() => void q.refetch()} />;
 
   return (
     <div className="stack">

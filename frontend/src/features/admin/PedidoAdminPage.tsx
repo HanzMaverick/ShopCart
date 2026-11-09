@@ -109,7 +109,7 @@ export default function PedidoAdminPage() {
   const trans = useQuery({ queryKey: ['pedidos', 'transiciones'], queryFn: pedidosApi.transiciones, staleTime: 10 * 60_000 });
 
   if (q.isPending) return <div className="stack"><Skeleton height={100} /><Skeleton height={220} /></div>;
-  if (q.isError) return <ErrorState title="No se encontro el pedido" error={q.error} onRetry={() => void q.refetch()} />;
+  if (q.isError) return <ErrorState title="No se encontró el pedido" error={q.error} onRetry={() => void q.refetch()} />;
 
   const estadoId = q.data.pedido.idEstadoPedido;
   // Estados a los que se puede pasar desde el actual (6 y 7 los fija el registro de devoluciones)
@@ -129,7 +129,7 @@ export default function PedidoAdminPage() {
                 {t.idEstadoDestino === 5 ? 'Cancelar pedido' : `Pasar a ${ESTADO_LABEL[t.estadoDestino] ?? t.estadoDestino}`}
               </Button>
             ))}
-            {puedeDevolver(estadoId) && <Button variant="secondary" onClick={() => setDevolviendo(true)}>Registrar devolucion</Button>}
+            {puedeDevolver(estadoId) && <Button variant="secondary" onClick={() => setDevolviendo(true)}>Registrar devolución</Button>}
             {siguientes.length === 0 && !puedeDevolver(estadoId) && !trans.isError && <span className="muted">No hay acciones disponibles para este estado.</span>}
           </div>
         </Card>

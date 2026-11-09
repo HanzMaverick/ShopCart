@@ -4,7 +4,7 @@ export const ESTADOS = [
 ] as const;
 
 export const ESTADO_LABEL: Record<string, string> = {
-  Pagado: 'Pagado', EnPreparacion: 'En preparacion', Despachado: 'Despachado', Entregado: 'Entregado',
+  Pagado: 'Pagado', EnPreparacion: 'En preparación', Despachado: 'Despachado', Entregado: 'Entregado',
   Cancelado: 'Cancelado', DevueltoParcial: 'Devuelto parcial', DevueltoTotal: 'Devuelto total',
 };
 

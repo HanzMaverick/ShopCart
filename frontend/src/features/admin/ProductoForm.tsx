@@ -34,12 +34,12 @@ export function ProductoForm({ initial, submitLabel, onSubmit, onCancel }: Props
     <form className="stack" onSubmit={submit} noValidate>
       {formError && <Alert tone="error">{formError}</Alert>}
       {categorias.isError && <Alert tone="warning">No se pudieron cargar las categorias. <Button size="sm" variant="ghost" onClick={() => void categorias.refetch()}>Reintentar</Button></Alert>}
-      <SelectField label="Categoria" error={errors.idCategoria?.message} {...register('idCategoria', { valueAsNumber: true })}>
+      <SelectField label="Categoría" error={errors.idCategoria?.message} {...register('idCategoria', { valueAsNumber: true })}>
         <option value="">Seleccione...</option>
         {activas.map((c) => <option key={c.idCategoria} value={c.idCategoria}>{c.nombre}{c.activa ? '' : ' (inactiva)'}</option>)}
       </SelectField>
       <TextField label="Nombre" error={errors.nombre?.message} {...register('nombre')} />
-      <TextareaField label="Descripcion (opcional)" error={errors.descripcion?.message} {...register('descripcion')} />
+      <TextareaField label="Descripción (opcional)" error={errors.descripcion?.message} {...register('descripcion')} />
       <div className="modal-actions">
         {onCancel && <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>Cancelar</Button>}
         <Button type="submit" loading={isSubmitting}>{submitLabel}</Button>

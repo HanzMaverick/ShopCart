@@ -2,7 +2,7 @@
  * Prueba de concurrencia contra la API en ejecucion (pnpm seed antes);
  *  A) ultima unidad: N clientes intentan reservar 1 unidad a la vez -> exactamente 1 gana, nunca hay sobreventa.
  *  B) idempotencia: el ganador paga 5 veces en paralelo con la misma clave -> 1 pedido, 1 cobro.
- *  C) cupon con 1 solo uso: 2 clientes lo usan a la vez -> exactamente 1 pedido con cupon.
+ *  C) cupón con 1 solo uso: 2 clientes lo usan a la vez -> exactamente 1 pedido con cupón.
  * Uso: pnpm concurrencia        (API_URL opcional, por defecto http://localhost:3000/api)
  */
 import { randomUUID } from 'node:crypto';
@@ -86,7 +86,7 @@ async function main() {
   const mis = await call('GET', '/pedidos/mis', { token: g.token });
   check('el cliente tiene exactamente 1 pedido', mis.data['pagination']?.total === 1, `total=${mis.data['pagination']?.total}`);
 
-  /* ===== Integridad del inventario ===== */
+  /*Integridad del inventario*/
   const inv = await call('GET', `/inventario?texto=${encodeURIComponent(ultima.sku)}`, { token: admin });
   const fila = inv.data['data']?.[0];
   check('existencia fisica 0 y reservada 0 (sin sobreventa)', fila?.existenciaFisica === 0 && fila?.existenciaReservada === 0, `fisica=${fila?.existenciaFisica}, reservada=${fila?.existenciaReservada}`);
@@ -94,8 +94,8 @@ async function main() {
   const suma = (kardex.data['data'] as { cantidad: number }[]).reduce((a, k) => a + k.cantidad, 0);
   check('la suma del kardex coincide con la existencia', suma === fila?.existenciaFisica, `suma=${suma}`);
 
-  /* ===== C) Cupon de un solo uso ===== */
-  console.log('\nC) Cupon con limite total = 1 usado por 2 clientes a la vez');
+  /* C) Cupon de un solo uso*/
+  console.log('\nC) Cupón con limite total = 1 usado por 2 clientes a la vez');
   const producto = await productoDePrueba(admin, 'CUP', 100, 10);
   const codigo = `T${RUN}`.slice(0, 30);
   const ahora = Date.now();
@@ -106,13 +106,13 @@ async function main() {
   for (const c of pareja) {
     await call('POST', '/carrito/items', { token: c.token, body: { idVariante: producto.idVariante, cantidad: 1 } });
     const ap = await call('POST', '/carrito/cupon', { token: c.token, body: { codigo } });
-    if (ap.status !== 200) throw new Error(`No se pudo aplicar el cupon: ${JSON.stringify(ap.data)}`);
+    if (ap.status !== 200) throw new Error(`No se pudo aplicar el cupón: ${JSON.stringify(ap.data)}`);
     await call('POST', '/checkout/iniciar', { token: c.token });
   }
   const pagosCupon = await Promise.all(pareja.map((c) => call('POST', '/checkout/pagar', {
     token: c.token, body: { idDireccion: c.idDireccion, metodoPago: 'Transferencia' }, headers: { 'Idempotency-Key': randomUUID() },
   })));
-  check('exactamente 1 pedido usa el cupon', cuenta(pagosCupon, 201) === 1 && cuenta(pagosCupon, 422) === 1, `201=${cuenta(pagosCupon, 201)}, 422=${cuenta(pagosCupon, 422)}`);
+  check('exactamente 1 pedido usa el cupón', cuenta(pagosCupon, 201) === 1 && cuenta(pagosCupon, 422) === 1, `201=${cuenta(pagosCupon, 201)}, 422=${cuenta(pagosCupon, 422)}`);
   const rechazo = pagosCupon.find((p) => p.status === 422)?.data['error']?.message;
   check('el rechazado ve el motivo especifico', typeof rechazo === 'string' && rechazo.includes('agotado'), String(rechazo));
   const cuponFinal = await call('GET', `/cupones/${cupon.data['idCupon']}`, { token: admin });
