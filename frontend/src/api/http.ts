@@ -109,10 +109,28 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
       session.expire();
       throw err;
     }
-    throw new ApiError(0, 'NETWORK', 'No se pudo renovar la sesion por un problema de conexión.');
+    throw new ApiError(0, 'NETWORK', 'No se pudo renovar la sesion por un problema de conexion.');
   }
 
   if (!res.ok) throw await readError(res);
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
+}
+
+/**
+ * Abre un stream (SSE) autenticado. Se usa fetch y no EventSource porque este ultimo no permite la cabecera Authorization
+ * (habria que poner el token en la URL, donde queda en historiales y registros). Si el token venció, se renueva la sesion y reintenta.
+ */
+export async function openStream(path: string, signal: AbortSignal): Promise<Response> {
+  const intentar = () => {
+    const access = session.getAccess();
+    return fetch(`${BASE}${path}`, { headers: { Accept: 'text/event-stream', ...(access ? { Authorization: `Bearer ${access}` } : {}) }, signal });
+  };
+  let res = await intentar();
+  if (res.status === 401 && session.getRefresh()) {
+    const result = await refreshSession();
+    if (result === 'ok') res = await intentar();
+    else if (result === 'invalid') session.expire();
+  }
+  return res;
 }

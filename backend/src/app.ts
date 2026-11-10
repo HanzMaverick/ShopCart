@@ -7,6 +7,7 @@ import { authRouter } from './routes/auth.routes';
 import { adminCatalogoRouter, tiendaRouter } from './routes/catalogo.routes';
 import { carritoRouter } from './routes/carrito.routes';
 import { checkoutRouter, direccionesRouter } from './routes/checkout.routes';
+import { eventosRouter } from './routes/eventos.routes';
 import { inventarioRouter } from './routes/inventario.routes';
 import { cuponesRouter, pedidosRouter } from './routes/pedidos.routes';
 import { reportesRouter } from './routes/reportes.routes';
@@ -44,6 +45,7 @@ export function createApp() {
   app.use('/api/pedidos', pedidosRouter);
   app.use('/api/cupones', cuponesRouter);
   app.use('/api/reportes', reportesRouter);
+  app.use('/api/eventos', eventosRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

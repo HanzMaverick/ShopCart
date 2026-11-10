@@ -8,14 +8,14 @@ export const passwordSchema = z.string()
   .regex(/[A-Za-z]/, 'Debe incluir al menos una letra.').regex(/\d/, 'Debe incluir al menos un número.');
 
 export const loginSchema = z.object({
-  correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo invalido.')),
+  correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo inválido.')),
   contrasena: z.string().min(1, 'La contraseña es obligatoria.'),
 });
 export type LoginForm = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
   nombre: texto('El nombre', 2, 150),
-  correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo invalido.')),
+  correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo inválido.')),
   contrasena: passwordSchema,
   confirmar: z.string().min(1, 'Confirme la contraseña.'),
 }).refine((v) => v.contrasena === v.confirmar, { message: 'Las contraseñas no coinciden.', path: ['confirmar'] });
@@ -27,11 +27,11 @@ export const direccionSchema = z.object({
   linea2: z.string().trim().max(200).optional().transform((v) => v || null),
   ciudad: texto('La ciudad', 2, 100),
   departamento: texto('El departamento', 2, 100),
-  telefono: z.string().trim().regex(/^[0-9+\-\s()]{7,20}$/, 'Telefono invalido (7 a 20 digitos).'),
+  telefono: z.string().trim().regex(/^[0-9+\-\s()]{7,20}$/, 'Teléfono inválido (7 a 20 digitos).'),
 });
 export type DireccionForm = z.input<typeof direccionSchema>;
 
-const cantidadEntera = (min: number, max: number) => z.number({ error: 'Ingrese un numero.' }).int('Debe ser un numero entero.').min(min, `Minimo ${min}.`).max(max, `Maximo ${max}.`);
+const cantidadEntera = (min: number, max: number) => z.number({ error: 'Ingrese un número.' }).int('Debe ser un número entero.').min(min, `Minimo ${min}.`).max(max, `Maximo ${max}.`);
 
 export const entradaSchema = z.object({ cantidad: cantidadEntera(1, 1_000_000), motivo: texto('El motivo', 3, 300) });
 export const ajusteSchema = z.object({
@@ -46,7 +46,7 @@ export const comentarioSchema = z.object({ comentario: z.string().trim().max(500
 /*Administracion*/
 const monto = z.number({ error: 'Ingrese un monto.' }).positive('Debe ser mayor a cero.').max(9_999_999_999, 'Monto demasiado alto.')
   .refine((n) => Math.abs(n * 100 - Math.round(n * 100)) < 1e-6, 'Maximo 2 decimales.');
-const entero = (min: number, max: number) => z.number({ error: 'Ingrese un numero.' }).int('Debe ser un numero entero.').min(min, `Minimo ${min}.`).max(max, `Maximo ${max.toLocaleString('es-GT')}.`);
+const entero = (min: number, max: number) => z.number({ error: 'Ingrese un número.' }).int('Debe ser un número entero.').min(min, `Minimo ${min}.`).max(max, `Maximo ${max.toLocaleString('es-GT')}.`);
 const opcional = (max: number) => z.string().trim().max(max, `Maximo ${max} caracteres.`).optional().transform((v) => v || null);
 
 export const categoriaSchema = z.object({ nombre: texto('El nombre', 2, 100), descripcion: opcional(500), activa: z.boolean() });
@@ -102,7 +102,7 @@ export type CuponForm = z.input<typeof cuponSchema>;
 export const usuarioSchema = z.object({
   idRol: z.number({ error: 'Seleccione un rol.' }).int().min(1, 'Seleccione un rol.').max(3),
   nombre: texto('El nombre', 2, 150),
-  correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo invalido.')),
+  correo: z.string().trim().min(1, 'El correo es obligatorio.').pipe(z.email('Correo inválido.')),
   contrasena: passwordSchema,
 });
 export type UsuarioForm = z.input<typeof usuarioSchema>;

@@ -8,6 +8,7 @@ import { DataTable, type Column } from '../../components/ui/DataTable';
 import { SelectField, TextField } from '../../components/ui/fields';
 import { Badge, Card, PageHeader, Skeleton } from '../../components/ui/feedback';
 import { QueryPanel } from '../../components/ui/QueryPanel';
+import { LiveBadge } from '../../components/ui/LiveBadge';
 import { compactQ, daysAgoISO, etiquetaPeriodo, formatCalendarDate, formatDateTime, formatNumber, formatQ, todayISO } from '../../lib/format';
 import { EstadoBadge } from '../pedidos/PedidoView';
 
@@ -55,7 +56,7 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader title="Dashboard" subtitle="Datos al momento. No incluye pedidos cancelados ni devueltos del todo; las devoluciones parciales se descuentan."
-                  actions={<Button variant="secondary" onClick={() => void qc.invalidateQueries({ queryKey: ['reportes'] })}>Actualizar</Button>} />
+                  actions={<>{resumen.dataUpdatedAt > 0 && <span className="muted small">Actualizado {new Date(resumen.dataUpdatedAt).toLocaleTimeString('es-GT', { timeZone: 'America/Guatemala' })}</span>}<LiveBadge /><Button variant="secondary" onClick={() => void qc.invalidateQueries({ queryKey: ['reportes'] })}>Actualizar</Button></>} />
       <div className="stack">
         <Card className="card-flat">
           <div className="filters">

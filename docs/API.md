@@ -21,7 +21,7 @@ Roles: **P** publico · **C** Cliente · **O** Operador · **A** Administrador.
 | Ruta | Query |
 |---|---|
 | GET `/tienda/categorias` | - |
-| GET `/tienda/productos` | `texto, idCategoria, precioMin, precioMax, soloDisponibles, ordenarPor=Nombre\|Precio\|Recientes, direccion, page, pageSize` |
+| GET `/tienda/productos` | `texto, idCategoria, precioMin, precioMax, soloDisponibles, ordenarPor=Nombre\|Precio\|Recientes, direccion, page, pageSize`. El filtro de precio es por variante: aparece el producto si **alguna** variante activa cuesta entre `precioMin` y `precioMax` (ambos inclusive); el rango de precios mostrado se calcula con esas variantes |
 | GET `/tienda/productos/:id` | producto + variantes + imagenes |
 
 ## Carrito (P con `X-Cart-Token`, o C)
@@ -73,6 +73,9 @@ Fechas en hora de Guatemala (`YYYY-MM-DD`, inclusivas; por defecto ultimos 30 di
 | GET `/reportes/top-productos` | `desde, hasta, top=10 (max 50)` | `{ meta, data: [{ producto, categoria, unidades, ventasNetas }] }` |
 | GET `/reportes/pedidos-por-estado` | `desde, hasta` | `{ meta, data: [{ estado, pedidos, monto }] }` (incluye cancelados y devueltos) |
 | GET `/reportes/carritos-abandonados` | `horas=24, page, pageSize` | `{ horas, valorTotal, data, pagination }` |
+
+## Tiempo real (SSE) · `GET /eventos/stream`
+Cualquier usuario con sesion. Responde `text/event-stream` y deja la conexion abierta. Eventos: `conectado` (al abrir), `pedido.creado`, `pedido.estado`, `pedido.devolucion`; comentario `: latido` cada 25 s. Carga: `{ tipo, idPedido, numeroPedido, idUsuario (dueno), idActor, idEstadoPedido, estado, ts }` (sin montos ni datos personales). **Cliente: solo eventos de sus pedidos; Operador y Administrador: todos.** El servidor cierra el canal al expirar el access token; el cliente reconecta (y renueva la sesion si hace falta). Se consume con `fetch` + stream y cabecera `Authorization` (no con `EventSource`, para no poner el token en la URL).
 
 ## Sistema
 GET `/health` -> `{ status: "ok", db: "up" }`.

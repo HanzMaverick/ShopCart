@@ -110,3 +110,9 @@ export interface BitacoraFila {
   idBitacora: number; modulo: string; entidad: string; idEntidad: number; accion: string; valorAnterior: Record<string, unknown> | null;
   valorNuevo: Record<string, unknown> | null; idUsuario: number; nombreUsuario: string; fecha: string;
 }
+
+/*Tiempo real (SSE)*/
+export interface EventoServidor {
+  tipo: 'pedido.creado' | 'pedido.estado' | 'pedido.devolucion';
+  idPedido: number; numeroPedido: string; idUsuario: number; idActor: number; idEstadoPedido: number; estado: string; ts: string;
+}

@@ -5,7 +5,7 @@ import { AppError } from '../errors/AppError';
 
 export type Rol = 'Cliente' | 'Operador' | 'Administrador';
 
-export interface AccessClaims { sub: number; rol: Rol }
+export interface AccessClaims { sub: number; rol: Rol; exp: number }
 
 export function signAccessToken(idUsuario: number, rol: Rol): string {
   return jwt.sign({ rol }, env.JWT_ACCESS_SECRET, {
@@ -19,7 +19,7 @@ export function verifyAccessToken(token: string): AccessClaims {
   try {
     const payload = jwt.verify(token, env.JWT_ACCESS_SECRET, { algorithms: ['HS256'] });
     if (typeof payload === 'string' || !payload.sub) throw AppError.unauthorized('Token invalido.');
-    return { sub: Number(payload.sub), rol: payload['rol'] as Rol };
+    return { sub: Number(payload.sub), rol: payload['rol'] as Rol, exp: payload.exp ?? 0 };
   } catch (err) {
     if (err instanceof AppError) throw err;
     if (err instanceof jwt.TokenExpiredError) throw AppError.unauthorized('El token ha expirado.', 'TOKEN_EXPIRED');

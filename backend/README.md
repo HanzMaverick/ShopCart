@@ -5,7 +5,7 @@ Express + TypeScript (strict) sobre SQL Server. **Todo acceso a datos es por sto
 ## Puesta en marcha
 1. Ejecutar los scripts: `cd ../database && DB_SERVER=localhost DB_USER=sa DB_PASSWORD='***' ./run_all.sh` (o correr `001`..`008` en orden con SSMS / Azure Data Studio).
 2. `cp .env.example .env` y completar `DB_USER`, `DB_PASSWORD` y `JWT_ACCESS_SECRET` (min. 32 caracteres).
-3. `pnpm install --frozen-lockfile` y luego `pnpm seed` (usuarios y catalogo  de demostracion, idempotente).
+3. `pnpm install --frozen-lockfile` y luego `pnpm seed` (usuarios y catálogo de demostración, idempotente).
 4. `pnpm dev` -> http://localhost:3000/api/health
 
 Requisitos: Node 24 LTS y pnpm 12 (`corepack enable` o `npm i -g pnpm`; el campo `packageManager` fija la version).
@@ -21,6 +21,7 @@ Referencia completa en [`../docs/API.md`](../docs/API.md). Arquitectura y estado
 
 ## Pruebas
 - `pnpm typecheck`: compilacion estricta.
+- `pnpm test`: pruebas del tiempo real (bus de eventos y canal SSE de extremo a extremo, sin base de datos).
 - `pnpm concurrencia`: con la API y la BD en marcha (y `pnpm seed` ejecutado). Verifica con varias peticiones simultaneas: (A) la ultima unidad la obtiene un solo cliente, (B) 5 pagos con la misma `Idempotency-Key` crean un solo pedido, (C) un cupon de un solo uso lo consigue un solo cliente. Para no chocar con el limite de intentos de `/auth`, arrancar la API con `RATE_LIMIT_AUTH_POR_MINUTO=1000`.
 
 ## Decisiones tecnicas
@@ -39,7 +40,10 @@ Referencia completa en [`../docs/API.md`](../docs/API.md). Arquitectura y estado
   |---|---|---|
   | `zod` 3.25.x | consumo de memoria con colecciones grandes | actualizado a `zod@4.6.7` |
   | `@azure/msal-node` (via mssql > tedious) | fuga de parametros en flujo Azure AD | `overrides` a `7.1.0`; solo aplica a autenticacion Azure AD, aqui se usa login SQL |
-  | `body-parser` 2.3.0 (via express) | DoS con bytes extra tras cuerpo comprimido | **pendiente**: la correccion 2.4.0 (22-oct) aun no cumple los 7 dias. Mitigado con `express.json({ inflate: false })` (responde 415 a cuerpos comprimidos). Al madurar (desde el 29-oct): agregar `body-parser: 2.4.0` a `overrides` y volver a auditar |
+  | `body-parser` 2.3.0 (via express) | DoS con bytes extra tras cuerpo comprimido | `overrides` a `2.4.0` (ya cumple la antiguedad minima); ademas `express.json({ inflate: false })` rechaza cuerpos comprimidos (415) |
+
+## Tiempo real (SSE)
+`GET /api/eventos/stream` (sesion requerida) abre un canal Server-Sent Events. El servidor **solo avisa** (`pedido.creado`, `pedido.estado`, `pedido.devolucion`, con ids y estado; nunca montos ni datos personales) y el cliente vuelve a consultar la API. Un Cliente recibe unicamente los eventos de SUS pedidos; Operador y Administrador reciben todos. El canal se cierra al expirar el access token (el cliente reconecta y renueva la sesion) y envia un latido cada 25 s. Los eventos se publican desde los servicios tras completarse la operacion y nunca hacen fallar la peticion. Limite: bus en memoria = una sola instancia del backend (con varias haria falta Redis pub/sub). `pnpm test` cubre el bus y el canal de extremo a extremo.
 
 ## Concurrencia y checkout
 - `execSp` reintenta hasta 3 veces (con espera creciente) si SQL Server elige la transaccion como victima de un interbloqueo (error 1205); es seguro porque la transaccion se revirtio completa.

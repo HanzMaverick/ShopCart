@@ -1,7 +1,13 @@
-# ShopCart - Tienda en linea (Tech Challenge 360, Grupo Pentandra)
+# ShopCart - Tienda en linea
 
 Plataforma de ventas con **SQL Server** (todo el acceso a datos por stored procedures), **Node.js + Express + TypeScript** y **React + TypeScript**.
 Documentacion complementaria: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) (estructura y estado) · [`docs/API.md`](docs/API.md) (endpoints) · [`backend/README.md`](backend/README.md) · [`frontend/README.md`](frontend/README.md).
+
+Screenshots:
+### Página principal
+![Home](./screenshots/home.png)
+
+Más disponibles en [`./screenshots/`](./screenshots/).
 
 ## 1. Puesta en marcha (maquina limpia)
 Requisitos: SQL Server 2019+ (con `sqlcmd`), Node.js 24 LTS y pnpm 12 (`corepack enable` o `npm i -g pnpm`).
@@ -127,4 +133,3 @@ Las transiciones viven en la tabla `TransicionEstadoPedido` y se validan en el S
 - **Dependencias:** pnpm con versiones exactas, scripts de instalacion bloqueados y antiguedad minima de 7 dias (`pnpm-workspace.yaml`); auditoria documentada en `backend/README.md`.
 - **Tiempo real (extra):** el dashboard, las listas y el detalle de pedidos se actualizan solos por SSE; el cliente ve el cambio de estado de su pedido sin recargar (ver `docs/ARQUITECTURA.md`, seccion 4b).
 - **Inmutabilidad:** bitacora, kardex e historial de estados no admiten UPDATE/DELETE (triggers).
-

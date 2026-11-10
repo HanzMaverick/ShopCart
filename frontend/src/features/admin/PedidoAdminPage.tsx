@@ -10,6 +10,7 @@ import { TextareaField } from '../../components/ui/fields';
 import { Alert, Card, ErrorState, Skeleton } from '../../components/ui/feedback';
 import { errorMessage } from '../../lib/errors';
 import { formatQ } from '../../lib/format';
+import { LiveBadge } from '../../components/ui/LiveBadge';
 import { ESTADO_LABEL, puedeDevolver } from '../pedidos/estados';
 import { PedidoView } from '../pedidos/PedidoView';
 
@@ -117,7 +118,7 @@ export default function PedidoAdminPage() {
 
   return (
     <div className="stack">
-      <Link to="/admin/pedidos" className="small">← Pedidos</Link>
+      <div className="row-between"><Link to="/admin/pedidos" className="small">← Pedidos</Link><LiveBadge /></div>
       <PedidoView detalle={q.data} showCliente>
         <Card>
           <h2>Acciones</h2>

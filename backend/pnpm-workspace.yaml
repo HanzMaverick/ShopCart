@@ -1,2 +1,12 @@
 allowBuilds:
-  esbuild: false
+  esbuild: true
+
+# Cadena de suministro: no instalar versiones publicadas hace menos de 7 dias (en minutos)
+minimumReleaseAge: 10080
+
+# Parche de seguridad en una dependencia transitiva (mssql > tedious > @azure/identity). Solo se usa con autenticacion Azure AD.
+overrides:
+  "@azure/msal-node": 7.1.0
+  body-parser: 2.4.0
+
+saveExact: true

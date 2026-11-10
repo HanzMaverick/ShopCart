@@ -1,6 +1,6 @@
-# ShopCart - Arquitectura y organizacion
+# ShopCart - Arquitectura y organizacion (documento vivo)
 
-Ultima actualizacion: **2-nov-2026**: reportes y dashboard (RF-08), semilla grande y README principal.
+Ultima actualizacion: **9 de noviembre 2026**: dashboard y estados de pedido en **tiempo real (SSE)** y correccion del filtro de precio del catalogo (script 017). Todos los requerimientos y el extra de tiempo real estan implementados.
 
 ## 1. Mapa del repositorio
 ```
@@ -19,7 +19,8 @@ shopcart/
 │   ├── 013      SP_Pedidos_CrearPedido (atomico e idempotente)
 │   ├── 014      pedidos, cambio de estado, devoluciones
 │   ├── 015      reportes: VW_Dashboard_VentasPedido, FU_Dashboard_Periodo, SP_Reportes_*
-│   └── 016      semilla grande (2 000 clientes, ~9 000 variantes, 50 000 pedidos) con kardex coherente
+│   ├── 016      semilla grande (2 000 clientes, ~9 000 variantes, 50 000 pedidos) con kardex coherente
+│   └── 017      correccion del filtro de precio (SP_Productos_Buscar filtra por variante)
 ├── backend/                        Express 5 + TypeScript strict + pnpm
 │   ├── .env.example · package.json · pnpm-lock.yaml · pnpm-workspace.yaml · tsconfig*.json
 │   ├── scripts/
@@ -31,14 +32,27 @@ shopcart/
 │       ├── db/                     pool.ts (conexion) · sp.ts (UNICA puerta a datos: SP tipados + reintento por 1205)
 │       ├── errors/AppError.ts
 │       ├── middleware/             auth.ts (JWT, roles, dueno del carrito) · errorHandler.ts
-│       ├── routes/                 auth · catalogo (tienda + admin) · inventario · usuarios/bitacora ·
+│       ├── routes/                 auth · catalogo (tienda + admin) · inventario · usuarios/bitacora · eventos (SSE) ·
 │       │                           carrito · checkout/direcciones · pedidos/cupones · reportes
-│       ├── services/               auth · usuarios · catalogo · inventario · carrito · checkout · pedidos · cupones · direcciones · reportes
+│       ├── services/               auth · usuarios · catalogo · inventario · carrito · checkout · pedidos · cupones · direcciones · reportes · eventos (bus en memoria)
 │       ├── repositories/           uno por modulo; cada metodo = un stored procedure
 │       ├── validators/             common.ts · schemas.ts (zod)
 │       ├── jobs/reservas.job.ts    libera reservas vencidas cada minuto
 │       └── utils/                  tokens.ts · pagination.ts
-└── frontend/                       (Fase 2) React 18 + TypeScript
+└── frontend/                       React 19 + TypeScript strict + Vite + pnpm (README propio)
+    ├── pnpm-workspace.yaml · package.json · vite.config.ts (proxy /api -> backend) · .env.example
+    └── src/
+        ├── main.tsx · app/            entrada, rutas (App.tsx) y menu por rol (navigation.ts)
+        ├── api/                       http.ts (cliente + renovacion de token) · session.ts · endpoints.ts · admin.ts · stream.ts (SSE) · types.ts · pruebas (http, stream)
+        ├── realtime/                  RealtimeProvider (una conexion SSE por pestana; invalida las consultas afectadas)
+        ├── auth/                      AuthContext · RequireRole
+        ├── components/                ui/ (Button, fields, Modal, Toast, LiveBadge, DataTable, Pager, QueryPanel, feedback) · layout/ · charts/
+        ├── features/                  tienda · carrito · checkout · pedidos · cuenta · admin
+        │                              admin/: Dashboard · PedidosAdmin · PedidoAdmin · Inventario · ProductosAdmin · ProductoAdmin ·
+        │                                      ProductoForm · Categorias · Cupones · Usuarios · Bitacora
+        ├── hooks/                     useUrlState · useDebouncedValue · useCountdown
+        ├── lib/                       format · errors · schemas (zod) · schemas.test.ts
+        └── styles/global.css
 ```
 
 ## 2. Capas y responsabilidades
@@ -53,15 +67,17 @@ shopcart/
 ## 3. Estado por requerimiento
 | RF | Modulo | BD | API | Frontend |
 |---|---|---|---|---|
-| 01 | Auth y roles | hecho | hecho | - |
-| 02 | Catalogo y variantes | hecho | hecho | - |
-| 03 | Inventario / kardex | hecho | hecho | - |
-| 04 | Carrito | hecho | **hecho** | - |
-| 05 | Cupones | hecho | **hecho** | - |
-| 06 | Checkout y pago | hecho | **hecho** | - |
-| 07 | Pedidos y devoluciones | hecho | **hecho** | - |
-| 08 | Dashboard y reportes | **hecho** | **hecho** | - |
-| 09 | Bitacora | hecho | hecho | - |
+| 01 | Auth y roles | hecho | hecho | **hecho** (login, registro, rutas por rol, refresh transparente, usuarios) |
+| 02 | Catalogo y variantes | hecho | hecho | **hecho** (tienda y administracion de productos, variantes, imagenes, categorias) |
+| 03 | Inventario / kardex | hecho | hecho | **hecho** |
+| 04 | Carrito | hecho | hecho | **hecho** (invitado y cliente) |
+| 05 | Cupones | hecho | hecho | **hecho** (aplicacion en carrito y CRUD admin) |
+| 06 | Checkout y pago | hecho | hecho | **hecho** (reserva con cuenta regresiva, pago idempotente) |
+| 07 | Pedidos y devoluciones | hecho | hecho | **hecho** (cliente y panel interno) |
+| 08 | Dashboard y reportes | hecho | hecho | **hecho** |
+| 09 | Bitacora | hecho | hecho | **hecho** (consulta con detalle de cambios) |
+
+Nota: el backend compila en strict y su validacion/autenticacion se probo sin base de datos; la logica de los SPs de los scripts 010 a 016 se verifica contra SQL Server con `pnpm concurrencia` y pruebas manuales (el 013 ya se ejecuto en el entorno del desarrollador).
 
 ## 4. Flujo de compra (extremo a extremo)
 1. **Carrito** `/api/carrito`: invitado (header `X-Cart-Token`) o Cliente (JWT). Cada cambio libera sus reservas.
@@ -71,6 +87,15 @@ shopcart/
 5. **Pagar** `POST /api/checkout/pagar` con `Idempotency-Key`: consume reservas, congela precios, kardex, pago, cierra carrito.
 6. **Operador** `PATCH /api/pedidos/:id/estado`; **devoluciones** `POST /api/pedidos/:id/devoluciones`.
 7. **Job** cada 60 s: `SP_Inventario_LiberarReservasVencidas`.
+
+## 4b. Tiempo real (SSE)
+```
+Servicio (checkout / pedidos) --publicar--> bus en memoria --filtra por rol--> GET /api/eventos/stream --> RealtimeProvider --invalida--> React Query --> pantallas
+```
+- El servidor **solo avisa** (ids y estado, sin montos); el cliente vuelve a pedir los datos a la API, que sigue siendo la fuente de verdad y aplica permisos.
+- Cliente: solo eventos de sus pedidos. Operador/Administrador: todos. Se invalida `pedidos` (todos), `inventario` (personal) y `reportes` (Administrador), con retardo de 500 ms para agrupar rafagas.
+- Autenticacion con `fetch` + stream y cabecera Bearer (no `EventSource`). El canal se cierra al vencer el token y se reconecta renovando la sesion; perro guardian de 70 s; al reconectar se refresca todo.
+- Limite: bus en memoria => una sola instancia del backend (con varias: Redis pub/sub).
 
 ## 5. Ciclo de vida del pedido
 ```mermaid
@@ -94,9 +119,3 @@ stateDiagram-v2
 - **Idempotencia:** `UNIQUE (IDUsuario, ClaveIdempotencia)` + hash SHA-256 del contenido.
 - **Seguridad:** el dueno (carrito, direcciones, pedidos) sale del JWT; ningun endpoint acepta un id de carrito; un pedido ajeno responde 404. `authenticate` recarga al usuario en cada peticion.
 - **Auditoria:** escrituras de catalogo, precios, existencias, cupones y estados de pedido -> `SP_Bitacora_Registrar`; bitacora y kardex inmutables por trigger.
-
-## 7. Pendiente (orden sugerido)
-1. Verificar en SQL Server: `run_all.sh --reset` completo (incluida la 016), `pnpm seed`, `pnpm concurrencia`, y medir los reportes con la semilla (objetivo < 1 s).
-2. Fase 2 (vence 9-nov): frontend React + TypeScript: rutas protegidas por rol, tablas con paginacion/orden/filtros del servidor, graficas del dashboard (consumen `/api/reportes/*`), estados de carga/vacio/error, formularios con validacion, refresh de token transparente y diseno responsive.
-3. Pulido para la defensa: repasar SPs criticos (reserva, checkout, cupones), preparar el guion de concurrencia y de decisiones (README seccion 5).
-4. Extras opcionales (solo si todo lo obligatorio funciona): SSE en el dashboard, exportacion a Excel/PDF, cache de reportes.

@@ -25,7 +25,7 @@ function ToastView({ item, onClose }: { item: ToastItem; onClose: (id: number) =
          onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
       <span className="toast-icon" aria-hidden="true">{ICON[item.tone]}</span>
       <span>{item.text}</span>
-      <button type="button" className="toast-close" aria-label="Cerrar notificacion" onClick={() => onClose(item.id)}>×</button>
+      <button type="button" className="toast-close" aria-label="Cerrar notificación" onClick={() => onClose(item.id)}>×</button>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { pedidosRepository } from '../repositories/pedidos.repository';
+import { eventos } from './eventos.service';
 
 export interface PagoInput { idDireccion: number; metodoPago: 'Tarjeta' | 'Transferencia' | 'Efectivo'; totalEsperado?: number }
 
@@ -23,6 +24,10 @@ export const checkoutService = {
       idUsuario, clave, hash: hashSolicitud(p), idDireccion: p.idDireccion, metodoPago: p.metodoPago, totalEsperado: p.totalEsperado,
     });
     const detalle = await pedidosRepository.detalle(creado.idPedido, idUsuario);
+    // Solo el pedido NUEVO se anuncia: un reintento idempotente no es un pedido nuevo
+    if (!creado.repetida) {
+      eventos.publicar({ tipo: 'pedido.creado', idPedido: creado.idPedido, numeroPedido: creado.numeroPedido, idUsuario, idActor: idUsuario, idEstadoPedido: 1, estado: 'Pagado' });
+    }
     return { repetida: creado.repetida, ...detalle };
   },
 };

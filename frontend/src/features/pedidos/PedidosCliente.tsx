@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { pedidosApi, type FiltrosPedidos } from '../../api/endpoints';
+import { ApiError } from '../../api/http';
 import type { PedidoResumen } from '../../api/types';
 import { Button } from '../../components/ui/Button';
 import { DataTable, nextSort, type Column } from '../../components/ui/DataTable';
@@ -15,7 +16,7 @@ import { formatDateTime, formatQ } from '../../lib/format';
 import { ESTADOS, ESTADO_LABEL, puedeCancelar } from './estados';
 import { EstadoBadge, PedidoView } from './PedidoView';
 
-/** Filtros de pedidos en URL (compartido por la vista del cliente y la del panel interno). */
+/**Filtros de pedidos en URL (compartido por la vista del cliente y la del panel interno)*/
 export function usePedidosFiltros(pageSize = 10) {
   const url = useUrlState();
   const sort = { by: url.get('ordenarPor') ?? 'Fecha', dir: (url.get('direccion') === 'ASC' ? 'ASC' : 'DESC') as 'ASC' | 'DESC' };
@@ -90,7 +91,12 @@ export function PedidoClientePage() {
   const cancelar = useMutation({
     mutationFn: () => pedidosApi.cancelar(idNum),
     onSuccess: async () => { toast.success('Pedido cancelado. El reembolso quedo registrado.'); setConfirm(false); await qc.invalidateQueries({ queryKey: ['pedidos'] }); },
-    onError: (e) => { toast.error(errorMessage(e)); setConfirm(false); },
+    onError: async (e) => {
+      // Si el pedido cambió de estado mientras tanto (p. ej. ya fue despachado), se explica y se recarga para mostrar la realidad
+      toast.error(e instanceof ApiError && e.code === 'BUSINESS_RULE' ? 'Este pedido ya no puede cancelarse porque cambió de estado. Se actualizó la información.' : errorMessage(e));
+      setConfirm(false);
+      await qc.invalidateQueries({ queryKey: ['pedidos'] });
+    },
   });
 
   if (q.isPending) return <div className="stack"><Skeleton height={100} /><Skeleton height={220} /></div>;
@@ -98,14 +104,14 @@ export function PedidoClientePage() {
 
   return (
     <div className="stack">
-      <Link to="/pedidos" className="small">← Mis pedidos</Link>
-      {location.state?.nuevo && <Alert tone="success">{location.state.repetida ? 'Este pedido ya estaba registrado (solicitud repetida): no se genero un segundo cobro.' : '¡Gracias por su compra! Su pago fue aprobado.'}</Alert>}
+      <div className="row-between"><Link to="/pedidos" className="small">← Mis pedidos</Link></div>
+      {location.state?.nuevo && <Alert tone="success">{location.state.repetida ? 'Este pedido ya estaba registrado (solicitud repetida): no se generó un segundo cobro.' : '¡Gracias por su compra! Su pago fue aprobado.'}</Alert>}
       <PedidoView detalle={q.data}>
         {puedeCancelar(q.data.pedido.idEstadoPedido) && (
           <Card><div className="row-between"><span className="muted">Puede cancelar este pedido mientras no sea despachado.</span><Button variant="danger" onClick={() => setConfirm(true)}>Cancelar pedido</Button></div></Card>
         )}
       </PedidoView>
-      {confirm && <ConfirmDialog title="Cancelar pedido" danger confirmLabel="Si, cancelar" loading={cancelar.isPending} message="Se reintegrara la existencia y se registrara el reembolso. Esta accion no se puede deshacer." onConfirm={() => cancelar.mutate()} onCancel={() => setConfirm(false)} />}
+      {confirm && <ConfirmDialog title="Cancelar pedido" danger confirmLabel="Si, cancelar" loading={cancelar.isPending} message="Se reintegrará la existencia y se registrará el reembolso. Esta acción no se puede deshacer." onConfirm={() => cancelar.mutate()} onCancel={() => setConfirm(false)} />}
     </div>
   );
 }

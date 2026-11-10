@@ -21,13 +21,13 @@ export function DireccionesPage() {
 
   const remove = useMutation({
     mutationFn: (id: number) => direccionesApi.eliminar(id),
-    onSuccess: () => { toast.success('Direccion eliminada'); setDeleting(null); return qc.invalidateQueries({ queryKey: DIRECCIONES_KEY }); },
+    onSuccess: () => { toast.success('Dirección eliminada'); setDeleting(null); return qc.invalidateQueries({ queryKey: DIRECCIONES_KEY }); },
     onError: (e) => toast.error(errorMessage(e)),
   });
 
   return (
     <>
-      <PageHeader title="Mis direcciones" subtitle="Direcciones de entrega" actions={<Button onClick={() => setEditing('nueva')}>Nueva direccion</Button>} />
+      <PageHeader title="Mis direcciones" subtitle="Direcciones de entrega" actions={<Button onClick={() => setEditing('nueva')}>Nueva dirección</Button>} />
       {q.isPending && <div className="stack"><Skeleton height={80} /><Skeleton height={80} /></div>}
       {q.isError && <ErrorState error={q.error} onRetry={() => void q.refetch()} />}
       {q.data?.length === 0 && <Card><EmptyState title="Aun no tiene direcciones" description="Agregue una para poder comprar." action={<Button onClick={() => setEditing('nueva')}>Agregar direccion</Button>} /></Card>}
@@ -45,13 +45,13 @@ export function DireccionesPage() {
       </div>
 
       {editing && (
-        <Modal title={editing === 'nueva' ? 'Nueva direccion' : 'Editar direccion'} onClose={() => setEditing(null)}>
+        <Modal title={editing === 'nueva' ? 'Nueva dirección' : 'Editar dirección'} onClose={() => setEditing(null)}>
           <DireccionForm
             initial={editing === 'nueva' ? undefined : editing}
             onCancel={() => setEditing(null)}
             onSubmit={async (d) => {
               if (editing === 'nueva') await direccionesApi.crear(d); else await direccionesApi.actualizar(editing.idDireccion, d);
-              toast.success('Direccion guardada');
+              toast.success('Dirección guardada');
               setEditing(null);
               await qc.invalidateQueries({ queryKey: DIRECCIONES_KEY });
             }}
@@ -59,8 +59,8 @@ export function DireccionesPage() {
         </Modal>
       )}
       {deleting && (
-        <ConfirmDialog title="Eliminar direccion" danger loading={remove.isPending} confirmLabel="Eliminar"
-          message={<>¿Eliminar la direccion <strong>{deleting.alias}</strong>? Los pedidos anteriores conservan su direccion.</>}
+        <ConfirmDialog title="Eliminar dirección" danger loading={remove.isPending} confirmLabel="Eliminar"
+          message={<>¿Eliminar la dirección <strong>{deleting.alias}</strong>? Los pedidos anteriores conservan su dirección.</>}
           onConfirm={() => remove.mutate(deleting.idDireccion)} onCancel={() => setDeleting(null)} />
       )}
     </>

@@ -6,6 +6,7 @@ import { ApiError } from './api/http';
 import { App } from './app/App';
 import { AuthProvider } from './auth/AuthContext';
 import { ToastProvider } from './components/ui/Toast';
+import { RealtimeProvider } from './realtime/RealtimeProvider';
 import '@fontsource-variable/montserrat';
 import './styles/global.css';
 
@@ -26,7 +27,9 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <ToastProvider>
           <AuthProvider>
-            <App />
+            <RealtimeProvider>
+              <App />
+            </RealtimeProvider>
           </AuthProvider>
         </ToastProvider>
       </BrowserRouter>

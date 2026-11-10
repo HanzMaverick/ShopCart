@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { pedidosApi } from '../../api/endpoints';
 import { DataTable, nextSort } from '../../components/ui/DataTable';
 import { PageHeader } from '../../components/ui/feedback';
+import { LiveBadge } from '../../components/ui/LiveBadge';
 import { columnasPedidos, FiltrosPedidosBar, usePedidosFiltros } from '../pedidos/PedidosCliente';
 
 export default function PedidosAdminPage() {
@@ -10,7 +11,7 @@ export default function PedidosAdminPage() {
 
   return (
     <>
-      <PageHeader title="Pedidos" subtitle="Gestion de pedidos de todos los clientes" />
+      <PageHeader title="Pedidos" subtitle="Gestion de pedidos de todos los clientes" actions={<LiveBadge />} />
       <div className="stack">
         <FiltrosPedidosBar url={url} conCliente />
         <DataTable columns={columnasPedidos('/admin/pedidos', true)} rows={q.data?.data} rowKey={(p) => p.idPedido} loading={q.isPending} fetching={q.isFetching}

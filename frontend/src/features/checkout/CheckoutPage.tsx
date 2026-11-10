@@ -90,7 +90,7 @@ export function CheckoutPage() {
       <div className="two-col">
         <div className="stack">
           <Card>
-            <div className="row-between"><h2>1. Dirección de entrega</h2><Button size="sm" variant="secondary" onClick={() => setNuevaDir(true)}>Nueva direccion</Button></div>
+            <div className="row-between"><h2>1. Dirección de entrega</h2><Button size="sm" variant="secondary" onClick={() => setNuevaDir(true)}>Nueva dirección</Button></div>
             {dirs.data.length === 0 && <Alert tone="warning">Agregue una dirección para continuar.</Alert>}
             <div className="stack-sm">
               {dirs.data.map((d) => (

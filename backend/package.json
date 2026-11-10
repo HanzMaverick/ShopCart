@@ -13,7 +13,8 @@
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
-    "concurrencia": "tsx scripts/concurrencia.ts"
+    "concurrencia": "tsx scripts/concurrencia.ts",
+    "test": "tsx --test src/services/eventos.service.test.ts src/routes/eventos.routes.test.ts"
   },
   "dependencies": {
     "bcryptjs": "3.0.3",
